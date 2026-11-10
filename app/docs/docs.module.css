@@ -1,0 +1,56 @@
+/*
+ * Docs layout (Figma 11:1204, 11:1916): from 1024 px a fixed sidebar column (280 px, size/width/lg) that scrolls on
+ * its own below the sticky header; from 768 to 1023 px a Menu button above the page opens the same tree in a
+ * Drawer; below 768 px the tree is part of the mobile menu.
+ */
+.docs {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sidebar {
+  display: none;
+}
+
+.drawer {
+  padding-block-start: var(--medo-space-8);
+}
+
+@media (max-width: 767.98px) {
+  .drawer {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .docs {
+    grid-template-columns: var(--medo-size-width-lg) minmax(0, 1fr);
+  }
+
+  .sidebar {
+    position: sticky;
+    inset-block-start: var(--medo-space-16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--medo-layout-gap-content);
+    block-size: calc(100dvh - var(--medo-space-16));
+    padding: var(--medo-space-4);
+    border-inline-end: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  }
+
+  .tree {
+    flex: 1;
+    min-block-size: 0;
+    overflow-y: auto;
+  }
+
+  .settings {
+    padding-block-start: var(--medo-space-4);
+    border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  }
+
+  .drawer {
+    display: none;
+  }
+}

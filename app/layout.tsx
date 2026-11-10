@@ -1,6 +1,7 @@
 /**
- * Root layout: imports fonts, tokens and component styles once for every page and sets the page language.
- * DM Mono is only used for code, and the code text styles use the regular weight, so it loads in 400 only.
+ * Root layout: fonts, tokens and component styles once for every page, the page language, the theme script and the
+ * site frame (skip link, header, footer). DM Mono is only used for code, and the code text styles use the regular
+ * weight, so it loads in 400 only.
  */
 import type { Metadata } from 'next';
 import '@fontsource/dm-sans/400.css';
@@ -12,7 +13,12 @@ import '@med-o/design-tokens/css/tokens.css';
 import '@med-o/design-tokens/css/typography.css';
 import '@med-o/ui/styles.css';
 import './globals.css';
+import { SkipLink } from '@med-o/ui';
+import { SiteFooter } from '../components/site-footer';
+import { SiteHeader } from '../components/site-header';
+import { ThemeScript } from '../components/theme-script';
 import { Providers } from './providers';
+import styles from './shell.module.css';
 
 export const metadata: Metadata = {
   title: 'med.o Design System',
@@ -21,9 +27,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // The theme script may set data-theme before React hydrates.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className={styles.page}>
+            <SkipLink href="#main" />
+            <SiteHeader />
+            <div className={styles.content}>{children}</div>
+            <SiteFooter />
+          </div>
+        </Providers>
       </body>
     </html>
   );

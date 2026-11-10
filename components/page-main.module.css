@@ -1,0 +1,10 @@
+/* <main>: the skip link target, with space above and below the content of the page. */
+.main {
+  flex: 1;
+  padding-block: var(--medo-space-8);
+}
+
+/* Focus lands here from the skip link; the content itself needs no ring. */
+.main:focus {
+  outline: none;
+}
