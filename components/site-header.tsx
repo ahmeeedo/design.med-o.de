@@ -6,15 +6,15 @@
  */
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
-import { IconButton, NavItem, NavList, QuickSearch } from '@med-o/ui';
-import { Search } from 'lucide-react';
+import { NavItem, NavList } from '@med-o/ui';
 import { FeedbackLink } from './feedback-link';
 import { MobileMenu } from './mobile-menu';
 import { ResourcesMenu } from './resources';
 import { PAGES, isWithin, type DocsArea } from './site-data';
 import { SiteLogo } from './site-logo';
+import { SiteSearch } from './site-search';
 import styles from './site-header.module.css';
 
 function subscribeScroll(onChange: () => void) {
@@ -28,7 +28,6 @@ const useScrolled = () => useSyncExternalStore(subscribeScroll, () => window.scr
 export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
   const pathname = usePathname();
   const scrolled = useScrolled();
-  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <header className={`medo-site-header ${styles.header}`} data-scrolled={scrolled || undefined}>
@@ -43,7 +42,7 @@ export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
         ))}
       </NavList>
       <div className="medo-site-header__actions">
-        <IconButton variant="ghost" size="md" icon={<Search />} aria-label="Search" onPress={() => setSearchOpen(true)} />
+        <SiteSearch docsTree={docsTree} />
         <FeedbackLink className={styles.wide} />
         <div className={styles.wide}>
           <ResourcesMenu />
@@ -52,15 +51,6 @@ export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
           <MobileMenu docsTree={docsTree} />
         </div>
       </div>
-      <QuickSearch
-        isOpen={searchOpen}
-        onOpenChange={setSearchOpen}
-        shortcut={false}
-        aria-label="Search the docs"
-        placeholder="Search the docs"
-      >
-        {[]}
-      </QuickSearch>
     </header>
   );
 }

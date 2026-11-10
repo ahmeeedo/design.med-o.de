@@ -10,7 +10,7 @@ export default function Updates() {
   return (
     <PageMain>
       <Container size="prose">
-        <Stack gap="content">
+        <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
           <h1 className="medo-text-heading-xl">Updates</h1>
           <p className={`medo-text-body-lg ${text.secondary}`}>
             Here you find the latest releases of <span translate="no">@med-o/ui</span> and{' '}

@@ -10,7 +10,7 @@ export default function Showcase() {
   return (
     <PageMain>
       <Container size="prose">
-        <Stack gap="content">
+        <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
           <h1 className="medo-text-heading-xl">Showcase</h1>
           <p className={`medo-text-body-lg ${text.secondary}`}>Here you see real interfaces built with the system.</p>
         </Stack>
