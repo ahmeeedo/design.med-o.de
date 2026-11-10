@@ -1,0 +1,29 @@
+/*
+ * Docs hero (Figma Site/Page header 104:2063, used in 106:3625 and 121:2152): a box in surface/canvas with a border
+ * and radius/xl. Below 640 px the padding, the title and the excerpt step down one size, as in the Mobile layout.
+ */
+.hero {
+  padding: var(--medo-space-8);
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-xl);
+  background: var(--medo-color-surface-canvas);
+}
+
+.category,
+.excerpt {
+  color: var(--medo-color-text-secondary);
+}
+
+@media (max-width: 639.98px) {
+  .hero {
+    padding: var(--medo-space-6);
+  }
+
+  .hero .title {
+    font: var(--medo-typography-display-md);
+  }
+
+  .hero .excerpt {
+    font: var(--medo-typography-body-md);
+  }
+}

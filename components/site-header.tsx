@@ -13,7 +13,7 @@ import { Search } from 'lucide-react';
 import { FeedbackLink } from './feedback-link';
 import { MobileMenu } from './mobile-menu';
 import { ResourcesMenu } from './resources';
-import { PAGES, isWithin } from './site-data';
+import { PAGES, isWithin, type DocsArea } from './site-data';
 import { SiteLogo } from './site-logo';
 import styles from './site-header.module.css';
 
@@ -25,7 +25,7 @@ function subscribeScroll(onChange: () => void) {
 /** True once the page is scrolled; false in the static HTML. */
 const useScrolled = () => useSyncExternalStore(subscribeScroll, () => window.scrollY > 0, () => false);
 
-export function SiteHeader() {
+export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
   const pathname = usePathname();
   const scrolled = useScrolled();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -49,7 +49,7 @@ export function SiteHeader() {
           <ResourcesMenu />
         </div>
         <div className={styles.narrow}>
-          <MobileMenu />
+          <MobileMenu docsTree={docsTree} />
         </div>
       </div>
       <QuickSearch

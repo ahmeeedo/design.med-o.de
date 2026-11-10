@@ -1,5 +1,5 @@
 /**
- * The links of the site shell in one place: page links, docs tree, resources and the feedback target.
+ * The links of the site shell in one place: page links, resources and the feedback target.
  * Header, mobile menu, docs sidebar and footer all read from here, so a link changes in one spot.
  */
 
@@ -8,6 +8,7 @@ export interface SiteLink {
   href: string;
 }
 
+/** One area of the docs tree, built from the content files (see docs-content.ts). */
 export interface DocsArea {
   label: string;
   pages: SiteLink[];
@@ -19,9 +20,6 @@ export const PAGES: (SiteLink & { match: string })[] = [
   { label: 'Docs', href: '/docs/overview/introduction', match: '/docs' },
   { label: 'Updates', href: '/updates', match: '/updates' },
 ];
-
-/** The docs tree. Only areas with pages appear; more areas join as their pages are written. */
-export const DOCS: DocsArea[] = [{ label: 'Overview', pages: [{ label: 'Introduction', href: '/docs/overview/introduction' }] }];
 
 /** External resources: header popover, mobile menu. Each opens a new tab. */
 export const RESOURCES: SiteLink[] = [

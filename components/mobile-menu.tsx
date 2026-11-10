@@ -14,12 +14,12 @@ import { Grip, X } from 'lucide-react';
 import { DocsNav } from './docs-nav';
 import { FeedbackLink } from './feedback-link';
 import { ResourcesSection } from './resources';
-import { PAGES, isWithin } from './site-data';
+import { PAGES, isWithin, type DocsArea } from './site-data';
 import { SiteLogo } from './site-logo';
 import { ThemeSelect } from './theme-select';
 import styles from './mobile-menu.module.css';
 
-export function MobileMenu() {
+export function MobileMenu({ docsTree }: { docsTree: DocsArea[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<Set<Key>>(new Set(['contents']));
@@ -65,7 +65,7 @@ export function MobileMenu() {
                       <ToggleButton id="contents">Contents</ToggleButton>
                       <ToggleButton id="resources">Resources</ToggleButton>
                     </ToggleButtonGroup>
-                    {view.has('resources') ? resources : <DocsNav onNavigate={close} />}
+                    {view.has('resources') ? resources : <DocsNav areas={docsTree} onNavigate={close} />}
                   </>
                 ) : (
                   resources

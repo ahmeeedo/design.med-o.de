@@ -8,9 +8,10 @@ import { DialogTrigger } from 'react-aria-components';
 import { Button, Drawer, Stack } from '@med-o/ui';
 import { PanelLeft } from 'lucide-react';
 import { DocsNav } from './docs-nav';
+import type { DocsArea } from './site-data';
 import { ThemeSelect } from './theme-select';
 
-export function DocsDrawer() {
+export function DocsDrawer({ areas }: { areas: DocsArea[] }) {
   return (
     <DialogTrigger>
       <Button variant="secondary" size="sm" startIcon={<PanelLeft />}>
@@ -19,7 +20,7 @@ export function DocsDrawer() {
       <Drawer title="Docs" side="left" size="sm">
         {(close) => (
           <Stack gap="group">
-            <DocsNav onNavigate={close} />
+            <DocsNav areas={areas} onNavigate={close} />
             <ThemeSelect />
           </Stack>
         )}

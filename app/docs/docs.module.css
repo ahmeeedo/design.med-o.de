@@ -2,6 +2,8 @@
  * Docs layout (Figma 11:1204, 11:1916): from 1024 px a fixed sidebar column (280 px, size/width/lg) that scrolls on
  * its own below the sticky header; from 768 to 1023 px a Menu button above the page opens the same tree in a
  * Drawer; below 768 px the tree is part of the mobile menu.
+ * The page sits left in its column with the page margin, from 1024 px with space/12 (48) as in Figma 106:3625, and
+ * grows up to container/lg. Running text stays within container/prose.
  */
 .docs {
   display: grid;
@@ -11,6 +13,16 @@
 
 .sidebar {
   display: none;
+}
+
+.page {
+  box-sizing: content-box;
+  max-inline-size: var(--medo-container-lg);
+  padding-inline: var(--medo-layout-margin);
+}
+
+.prose {
+  max-inline-size: var(--medo-container-prose);
 }
 
 @media (max-width: 767.98px) {
@@ -48,5 +60,9 @@
 
   .drawer {
     display: none;
+  }
+
+  .page {
+    padding-inline: var(--medo-space-12);
   }
 }
