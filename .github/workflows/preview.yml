@@ -1,0 +1,104 @@
+# Preview: deploys pull requests to one shared address, https://preview.dev-design.med-o.de. It always shows the pull
+# request that was pushed last – open several at once, and each push takes the preview over.
+#
+# Starts when a pull request is opened, gets a new push or is reopened. Only branches of this repository: pull requests
+# from forks never run it, so their code never gets a token or a secret (pull_request gives forks no secrets anyway;
+# pull_request_target and workflow_run are not used on purpose). Dependabot is skipped too: its runs get no secrets
+# and a read-only token, and its weekly updates should not take over the preview.
+# Two jobs, so the code of the pull request never runs next to a Coolify secret:
+#   image    builds the branch into ghcr.io/ahmeeedo/design-med-o-de with the tags preview and pr-<number>.
+#   deploy   only calls the preview resource's deploy webhook; it checks out nothing.
+# pr-<number> lets you put an earlier pull request back on the preview by hand (Coolify → preview resource → image tag).
+# Cleanup: none – the preview tag moves with each push; pr-<number> tags stay in the registry.
+#
+# Secrets (repository → Settings → Secrets and variables → Actions):
+#   COOLIFY_PREVIEW_WEBHOOK  Coolify → the preview resource → Webhooks → Deploy webhook (URL)
+#   COOLIFY_TOKEN            the deploy-only token of “Deploy”; it must include the preview resource
+# Without them the image is still pushed; only the deploy is skipped.
+name: Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# One preview, one deploy at a time: a running deploy finishes, then the newest waiting push follows (GitHub keeps only
+# the latest pending run). Skipped runs (forks, Dependabot) get a group of their own, so they never replace a waiting
+# preview.
+concurrency:
+  group: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' && 'preview' || format('preview-skipped-{0}', github.run_id) }}
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  IMAGE: ghcr.io/ahmeeedo/design-med-o-de
+
+jobs:
+  image:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write # push the image to ghcr.io
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The branch as pushed – what the pull request shows, not the merge with main.
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Log in to ghcr.io
+        env:
+          TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: echo "$TOKEN" | docker login ghcr.io --username "$ACTOR" --password-stdin
+
+      # Reads the cache of the main deploy and writes its own, so previews never change what main builds from.
+      - name: Build and push the image
+        env:
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          docker buildx create --use --driver docker-container
+          docker buildx build . --push \
+            --tag "$IMAGE:preview" \
+            --tag "$IMAGE:pr-$NUMBER" \
+            --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --label "org.opencontainers.image.description=med.o Design System documentation site (preview of pull request $NUMBER)" \
+            --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" \
+            --cache-from "type=registry,ref=$IMAGE:buildcache" \
+            --cache-from "type=registry,ref=$IMAGE:buildcache-preview" \
+            --cache-to "type=registry,ref=$IMAGE:buildcache-preview,mode=max"
+
+  deploy:
+    needs: image
+    # Repeated on purpose: this job holds the secrets, so it checks the fork rule itself.
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {} # nothing from GitHub: the call uses the Coolify secrets only
+    environment:
+      name: preview
+      url: https://preview.dev-design.med-o.de
+    steps:
+      - name: Deploy on Coolify
+        env:
+          WEBHOOK: ${{ secrets.COOLIFY_PREVIEW_WEBHOOK }}
+          TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "$WEBHOOK" ] || [ -z "$TOKEN" ]; then
+            echo "::notice title=Preview not deployed::Image ${IMAGE}:pr-${NUMBER} is pushed. Add the secrets COOLIFY_PREVIEW_WEBHOOK and COOLIFY_TOKEN to deploy it."
+            exit 0
+          fi
+          # Coolify's answer is printed, so a refusal says why (API off, IP not allowed, token without “deploy”).
+          # Older Coolify versions take GET, newer ones POST: try GET, then POST when the method is refused (405).
+          call() { curl --silent --show-error --max-time 60 --request "$1" --output response.txt --write-out '%{http_code}' -H "Authorization: Bearer $TOKEN" "$WEBHOOK"; }
+          status=$(call GET)
+          if [ "$status" = "405" ]; then status=$(call POST); fi
+          echo "Coolify answered $status: $(cat response.txt)"
+          if [ "$status" -ge 400 ]; then
+            echo "::error title=Coolify refused the deploy::HTTP $status – $(cat response.txt)"
+            exit 1
+          fi
+          echo "Pull request #${NUMBER} is on the preview: https://preview.dev-design.med-o.de" >> "$GITHUB_STEP_SUMMARY"
