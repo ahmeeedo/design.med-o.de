@@ -6,7 +6,7 @@
 #   keyboard the keyboard path at 1440 and 390 px: skip link, header, search, mobile menu. Red = a control is not
 #            reached, does not open or close, or focus does not return: the log names the step.
 #   budget   the JavaScript every page loads (gzip), as a table in the summary. Red = a page is over the limit in
-#            scripts/js-budget.mjs (no limit yet: report only) or a script is missing.
+#            scripts/js-budget.mjs (BUDGET_KB) or a script is missing.
 #   links    every internal link and asset in the export reaches a file. Red = a broken link: the log lists page → target.
 # “Deploy” starts only when all of them passed for a push to main. The job names are the required checks of main.
 name: CI

@@ -1,7 +1,8 @@
 /**
  * JavaScript budget: for every page in out/, the gzip size of the scripts it loads when it opens.
- * The concept proposes at most 100 kB per page. BUDGET_KB starts at null (report only); set it once the real pages
- * are measured, and the check fails above it.
+ * The check fails when a page loads more than BUDGET_KB. The limit is the measured maximum plus a small margin, so a
+ * page that grows needs a decision: shrink it or raise the limit on purpose. The concept's target of 100 kB is out of
+ * reach with this stack (React and Next.js alone load about 140 kB); null reports only.
  *
  * Counted: <script src>, <link rel="modulepreload"> and <link rel="preload" as="script">, each file once per page.
  * Not counted: <script nomodule> (legacy polyfills, modern browsers skip them), inline scripts (Next's page data,
@@ -13,8 +14,8 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { OUT, listPages, pageUrl, readTags, resolveUrlPath } from './out-files.mjs';
 
-/** Maximum gzip kB of JavaScript per page, or null to report only. */
-const BUDGET_KB = null;
+/** Maximum gzip kB of JavaScript per page, or null to report only. Measured: 262.4 kB on the docs page. */
+const BUDGET_KB = 270;
 
 const scriptsOf = (tags) =>
   tags.flatMap(({ name, attributes: a }) => {
