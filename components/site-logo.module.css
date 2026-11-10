@@ -1,0 +1,53 @@
+/*
+ * Site logo (Figma Site/Logo): the official med.o wordmark, a divider and the product name.
+ * The wordmark is never recolored: Light shows logo-rgb.svg, Dark logo-white.svg. Dark means data-theme="dark", or
+ * no data-theme while the system is dark – the same rule as the tokens.
+ * From 768 to 1023 px the header has no room for the product name, so only the wordmark shows.
+ */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--medo-layout-gap-inline);
+  color: var(--medo-color-text-secondary);
+  text-decoration: none;
+}
+
+.wordmark {
+  display: block;
+  inline-size: auto;
+  block-size: var(--medo-space-5);
+}
+
+.divider {
+  align-self: stretch;
+  border-inline-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+}
+
+.white {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .divider,
+  .name {
+    display: none;
+  }
+}
+
+:global([data-theme='dark']) .rgb {
+  display: none;
+}
+
+:global([data-theme='dark']) .white {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .rgb {
+    display: none;
+  }
+
+  :global(:root:not([data-theme='light'])) .white {
+    display: block;
+  }
+}

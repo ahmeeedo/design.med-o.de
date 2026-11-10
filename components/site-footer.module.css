@@ -1,0 +1,13 @@
+/* Site footer (Figma Site/Footer 76:3950): a line on top; on phones the links come first, the version below. */
+.footer {
+  padding-block: var(--medo-space-6);
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  background: var(--medo-color-surface-default);
+}
+
+@media (max-width: 767.98px) {
+  .row {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+}

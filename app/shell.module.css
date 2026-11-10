@@ -1,0 +1,17 @@
+/*
+ * Page frame: header, the page and the footer below it, also on short pages. The page uses surface/default, as in
+ * every approved Figma screen; the canvas color of the page base stays for areas that need a backdrop.
+ */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  background: var(--medo-color-surface-default);
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+

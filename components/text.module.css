@@ -1,0 +1,4 @@
+/* Text color for site text that is not part of a component; the text style comes from the medo-text-* classes. */
+.secondary {
+  color: var(--medo-color-text-secondary);
+}
