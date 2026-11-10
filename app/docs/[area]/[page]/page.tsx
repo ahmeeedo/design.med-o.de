@@ -34,12 +34,13 @@ export default async function DocPage({ params }: PageProps<'/docs/[area]/[page]
 
   const { default: Content } = await evaluate(doc.file, { ...runtime, rehypePlugins: [rehypeSections] });
 
+  // Only the hero and the body are indexed for search; the area comes from the hero's category line.
   return (
-    <>
+    <Stack gap="group" data-pagefind-body>
       <DocsHero category={doc.areaLabel} title={doc.title} excerpt={doc.excerpt} />
       <Stack gap="group" className={styles.prose}>
         <Content components={mdxComponents} />
       </Stack>
-    </>
+    </Stack>
   );
 }

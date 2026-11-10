@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <PageMain>
       <Container size="prose">
-        <Stack gap="content">
+        <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
           <h1 className="medo-text-heading-xl">med.o Design System</h1>
           <p className={`medo-text-body-lg ${text.secondary}`}>
             Components, tokens and guidelines for med.o products. Install the packages and start with your first page.

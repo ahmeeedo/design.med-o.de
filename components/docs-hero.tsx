@@ -11,7 +11,9 @@ export function DocsHero({ category, title, excerpt }: { category: string; title
     <header className={styles.hero}>
       <Stack gap="content">
         <Stack gap="inline">
-          <p className={`medo-text-label-sm ${styles.category}`}>{category}</p>
+          <p className={`medo-text-label-sm ${styles.category}`} data-pagefind-meta="area">
+            {category}
+          </p>
           <h1 className={`medo-text-display-xl ${styles.title}`}>{title}</h1>
         </Stack>
         <p className={`medo-text-body-lg ${styles.excerpt}`}>{excerpt}</p>
