@@ -13,10 +13,6 @@
   display: none;
 }
 
-.drawer {
-  padding-block-start: var(--medo-space-8);
-}
-
 @media (max-width: 767.98px) {
   .drawer {
     display: none;
