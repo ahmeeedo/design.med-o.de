@@ -4,6 +4,8 @@
 # need no setting. As production, run with -e ROBOTS_TAG= (empty): then no X-Robots-Tag is sent.
 # Launch: the production resource in Coolify gets the environment variable ROBOTS_TAG with an empty value.
 # Rollback: in Coolify, set the image tag to an earlier sha-<commit> and redeploy.
+# Logs: nginx writes to stdout and stderr; the server's Docker daemon caps them (json-file, max-size 10m, max-file 3 –
+# Coolify's default). The privacy policy relies on this cap, so keep it on any other host.
 FROM node:24-slim AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
