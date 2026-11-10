@@ -1,0 +1,9 @@
+/*
+ * Page base: canvas, text color and font for the whole page, from the tokens. The tokens and @med-o/ui do not
+ * style `body` themselves, so the app sets it once, the same way Storybook does. Dark mode follows from the tokens.
+ */
+body {
+  background: var(--medo-color-surface-canvas);
+  color: var(--medo-color-text-primary);
+  font-family: var(--medo-font-family-sans);
+}
