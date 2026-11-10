@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Dialog, DialogTrigger, Modal, ModalOverlay, type Key } from 'react-aria-components';
 import { IconButton, NavItem, NavList, ToggleButton, ToggleButtonGroup } from '@med-o/ui';
-import { Menu, X } from 'lucide-react';
+import { Grip, X } from 'lucide-react';
 import { DocsNav } from './docs-nav';
 import { FeedbackLink } from './feedback-link';
 import { ResourcesSection } from './resources';
@@ -33,7 +33,7 @@ export function MobileMenu() {
 
   return (
     <DialogTrigger isOpen={open} onOpenChange={setOpen}>
-      <IconButton variant="ghost" size="md" icon={<Menu />} aria-label="Menu" tooltip={false} />
+      <IconButton variant="ghost" size="md" icon={<Grip />} aria-label="Menu" tooltip={false} />
       <ModalOverlay className="medo-nav-fullscreen-overlay">
         <Modal className="medo-nav-fullscreen">
           <Dialog aria-label="Menu" className="medo-nav-fullscreen__dialog">
