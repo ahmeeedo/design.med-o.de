@@ -12,8 +12,8 @@
   "dependencies": {
     "@fontsource/dm-mono": "^5.3.0",
     "@fontsource/dm-sans": "^5.3.0",
-    "@med-o/design-tokens": "^0.10.0",
-    "@med-o/ui": "^0.10.0",
+    "@med-o/design-tokens": "^0.11.0",
+    "@med-o/ui": "^0.11.0",
     "lucide-react": "^1.71.0",
     "next": "^16.4.6",
     "react": "^19.3.1",
