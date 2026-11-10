@@ -1,0 +1,134 @@
+# Design system release: opens a pull request that updates @med-o/ui and @med-o/design-tokens to a new release.
+#
+# Triggers:
+#   repository_dispatch “med-o-release”, sent by the Release workflow of ahmeeedo/medo-design_system (job notify-docs)
+#     after it published to npm. Payload: {"packages": [{"name": "@med-o/ui", "version": "0.11.0"},
+#     {"name": "@med-o/design-tokens", "version": "0.11.0"}]} – any order; each package is read by its name.
+#     GitHub only delivers it to workflows on the default branch, so this file must be on main.
+#   By hand: Actions → Design system release → Run workflow, with one version for both packages (they release together).
+#
+# Versions are checked against x.y.z (optional -prerelease) before any shell uses them. When package-lock.json already
+# has both versions, nothing happens. Otherwise the branch deps/med-o-<version> gets the update and a pull request; a
+# re-run rebuilds the branch from main and keeps the open pull request.
+#
+# Pull requests opened with the built-in token do not start other workflows, so CI does not run on its own: close and
+# reopen the pull request to start it. Needs Settings → Actions → General → “Allow GitHub Actions to create and approve
+# pull requests”.
+name: Design system release
+
+on:
+  repository_dispatch:
+    types: [med-o-release]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version of @med-o/ui and @med-o/design-tokens, e.g. 0.11.0
+        required: true
+        type: string
+
+concurrency:
+  group: design-system-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push the update branch
+  pull-requests: write # open the pull request
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # Payload and input are untrusted text: they reach the shell only through env and are validated here first.
+      - name: Read the versions
+        id: versions
+        env:
+          PACKAGES: ${{ toJSON(github.event.client_payload.packages) }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            ui="$INPUT_VERSION"
+            tokens="$INPUT_VERSION"
+          else
+            version_of() { jq --raw-output --arg name "$1" '[.[]? | objects | select(.name == $name) | .version | strings] | first // ""' <<< "$PACKAGES"; }
+            ui=$(version_of @med-o/ui)
+            tokens=$(version_of @med-o/design-tokens)
+          fi
+          semver='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'
+          # The values are not printed: an invalid one could contain workflow commands.
+          if ! [[ "$ui" =~ $semver ]]; then
+            echo "::error title=No valid version::@med-o/ui needs a version like 0.11.0 (payload packages[].version or the version input)."
+            exit 1
+          fi
+          if ! [[ "$tokens" =~ $semver ]]; then
+            echo "::error title=No valid version::@med-o/design-tokens needs a version like 0.11.0 (payload packages[].version or the version input)."
+            exit 1
+          fi
+          echo "ui=$ui" >> "$GITHUB_OUTPUT"
+          echo "tokens=$tokens" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          # Kept: the update branch is pushed with the built-in token.
+          persist-credentials: true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Compare with the installed versions
+        id: compare
+        env:
+          UI: ${{ steps.versions.outputs.ui }}
+          TOKENS: ${{ steps.versions.outputs.tokens }}
+        run: |
+          installed() { node -p "require('./package-lock.json').packages['node_modules/$1'].version"; }
+          current_ui=$(installed @med-o/ui)
+          current_tokens=$(installed @med-o/design-tokens)
+          if [ "$current_ui" = "$UI" ] && [ "$current_tokens" = "$TOKENS" ]; then
+            echo "::notice title=Already up to date::main has @med-o/ui $UI and @med-o/design-tokens $TOKENS. No pull request."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Installed: @med-o/ui $current_ui, @med-o/design-tokens $current_tokens. New: $UI, $TOKENS."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update and open the pull request
+        if: steps.compare.outputs.changed == 'true'
+        env:
+          UI: ${{ steps.versions.outputs.ui }}
+          TOKENS: ${{ steps.versions.outputs.tokens }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # npm saves ^<version>, the range style of package.json; package-lock.json pins the exact version.
+          npm install --no-audit --no-fund "@med-o/ui@$UI" "@med-o/design-tokens@$TOKENS"
+
+          branch="deps/med-o-$UI"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --create "$branch"
+          git add package.json package-lock.json
+          git commit --message "build: update the design system to $UI"
+          # A re-run rebuilds the branch from main; only this workflow writes to it.
+          git push --force origin "$branch"
+
+          state=$(gh pr view "$branch" --json state --jq .state 2>/dev/null || true)
+          if [ "$state" = "OPEN" ]; then
+            echo "::notice title=Pull request updated::The open pull request for $branch has the new commit."
+            exit 0
+          fi
+
+          releases="https://github.com/ahmeeedo/medo-design_system/releases"
+          cat > body.md <<EOF
+          The design system released new versions on npm:
+
+          - \`@med-o/ui\` $UI – [release](${releases}/tag/%40med-o%2Fui%40${UI}) · [changelog](https://github.com/ahmeeedo/medo-design_system/blob/main/packages/ui/CHANGELOG.md)
+          - \`@med-o/design-tokens\` $TOKENS – [release](${releases}/tag/%40med-o%2Fdesign-tokens%40${TOKENS}) · [changelog](https://github.com/ahmeeedo/medo-design_system/blob/main/packages/tokens/CHANGELOG.md)
+
+          Before you merge, look for “Breaking” in the changelogs: those entries say what to update.
+
+          The checks do not start on their own for this pull request: close and reopen it to run CI.
+          EOF
+          gh pr create --base main --head "$branch" --title "build: update the design system to $UI" --body-file body.md
