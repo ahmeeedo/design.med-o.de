@@ -1,0 +1,25 @@
+# Dependabot: weekly updates for npm packages and GitHub Actions.
+# @med-o/* is left out: every design system release opens its own pull request (workflow “Design system release”).
+# Minor and patch updates come in one pull request per ecosystem, so a quiet week is one pull request to review, not
+# ten. Major updates stay separate: each may need code changes and its own decision.
+# New versions wait 3 days before Dependabot proposes them (its default cooldown), so a broken release is often pulled
+# before it reaches us.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: '@med-o/*'
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions-minor-and-patch:
+        update-types: [minor, patch]

@@ -1,0 +1,154 @@
+# CI – one job per question, so a red check says what is wrong:
+#   lint     ESLint without warnings and the TypeScript check. Red = a code or type error.
+#   build    the static export builds (out/) and is passed on to the checks below. Red = a page does not build.
+#   a11y     axe on every page in Light and Dark (WCAG 2.2 AA). Red = an accessibility violation: the log names the rule
+#            and the elements; the Playwright report is under Summary → Artifacts.
+#   keyboard the keyboard path at 1440 and 390 px: skip link, header, search, mobile menu. Red = a control is not
+#            reached, does not open or close, or focus does not return: the log names the step.
+#   budget   the JavaScript every page loads (gzip), as a table in the summary. Red = a page is over the limit in
+#            scripts/js-budget.mjs (BUDGET_KB) or a script is missing.
+#   links    every internal link and asset in the export reaches a file. Red = a broken link: the log lists page → target.
+# “Deploy” starts only when all of them passed for a push to main. The job names are the required checks of main.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to the same branch cancels the run that is still going.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # The checks below test exactly this export instead of building it again.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: out/
+          if-no-files-found: error
+          retention-days: 3
+
+  a11y:
+    needs: build
+    # Fixed OS: Playwright only installs system libraries on Ubuntu versions it knows. Raise this together with a
+    # Playwright update.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Chromium plus the system libraries it needs (download takes seconds, no cache needed).
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      - run: npm run test:a11y
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  keyboard:
+    needs: build
+    # Same setup as a11y (see there).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      - run: npm run test:keyboard
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-keyboard
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # budget and links only read files with Node's own modules: no npm ci needed.
+  budget:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      - run: npm run check:js-budget
+
+  links:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      - run: npm run check:links

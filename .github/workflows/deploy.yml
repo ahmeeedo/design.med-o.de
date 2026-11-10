@@ -1,0 +1,99 @@
+# Deploy: builds the site into a Docker image, pushes it to the GitHub Container Registry and tells Coolify to run it
+# on dev-design.med-o.de. The server only pulls the finished image – it never builds.
+#
+# Starts after “CI” passed for a push to main (exactly the tested commit), or by hand on main
+# (Actions → Deploy → Run workflow) to deploy main again.
+# Image: ghcr.io/ahmeeedo/design-med-o-de with the tags sha-<commit> and latest. More tags can be added next to them.
+# Rollback: in Coolify, set the image tag to an earlier sha-<commit> and redeploy.
+#
+# Secrets (repository → Settings → Secrets and variables → Actions):
+#   COOLIFY_WEBHOOK  Coolify → the docs resource → Webhooks → Deploy webhook (URL)
+#   COOLIFY_TOKEN    Coolify → Keys & Tokens → API tokens (permission “deploy”)
+# Without them the image is still pushed; only the deploy step is skipped.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write # push the image to ghcr.io
+
+env:
+  IMAGE: ghcr.io/ahmeeedo/design-med-o-de
+
+jobs:
+  deploy:
+    # Only a push to main whose checks are all green (pull requests run CI too and are skipped here), or a manual run
+    # on main.
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: dev
+      url: https://dev-design.med-o.de
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Exactly the commit CI tested – not a newer one that landed in the meantime.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Version
+        id: version
+        run: echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Plain docker commands instead of third-party actions: the repository only allows actions from GitHub.
+      # The runner has Docker with Buildx; the cache lives next to the image in the registry.
+      - name: Log in to ghcr.io
+        env:
+          TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: echo "$TOKEN" | docker login ghcr.io --username "$ACTOR" --password-stdin
+
+      - name: Build and push the image
+        env:
+          SHA: ${{ steps.version.outputs.sha }}
+        run: |
+          docker buildx create --use --driver docker-container
+          docker buildx build . --push \
+            --tag "$IMAGE:sha-$SHA" \
+            --tag "$IMAGE:latest" \
+            --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --label "org.opencontainers.image.description=med.o Design System documentation site" \
+            --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" \
+            --cache-from "type=registry,ref=$IMAGE:buildcache" \
+            --cache-to "type=registry,ref=$IMAGE:buildcache,mode=max"
+
+      - name: Deploy on Coolify
+        env:
+          WEBHOOK: ${{ secrets.COOLIFY_WEBHOOK }}
+          TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          SHA: ${{ steps.version.outputs.sha }}
+        run: |
+          if [ -z "$WEBHOOK" ] || [ -z "$TOKEN" ]; then
+            echo "::notice title=Site not deployed::Image ${IMAGE}:sha-${SHA} is pushed. Add the secrets COOLIFY_WEBHOOK and COOLIFY_TOKEN to deploy it."
+            exit 0
+          fi
+          # Coolify's answer is printed, so a refusal says why (API off, IP not allowed, token without “deploy”).
+          # Older Coolify versions take GET, newer ones POST: try GET, then POST when the method is refused (405).
+          call() { curl --silent --show-error --max-time 60 --request "$1" --output response.txt --write-out '%{http_code}' -H "Authorization: Bearer $TOKEN" "$WEBHOOK"; }
+          status=$(call GET)
+          if [ "$status" = "405" ]; then status=$(call POST); fi
+          echo "Coolify answered $status: $(cat response.txt)"
+          if [ "$status" -ge 400 ]; then
+            echo "::error title=Coolify refused the deploy::HTTP $status – $(cat response.txt)"
+            exit 1
+          fi
+          echo "Deployed ${IMAGE}:sha-${SHA} – https://dev-design.med-o.de" >> "$GITHUB_STEP_SUMMARY"

@@ -52,7 +52,7 @@ Decision: **Next.js 16** (App Router, static export) with React 19 and @med-o/ui
 
 | Risk | What it means here | How we limit it |
 |---|---|---|
-| React on every page | More JavaScript than a static-first framework | Pages are prerendered HTML; examples load on demand; budget of 100 kB JavaScript per page checked in CI |
+| React on every page | More JavaScript than a static-first framework | Pages are prerendered HTML; examples load on demand; budget of 270 kB JavaScript (gzip) per page checked in CI |
 | Static export limits | No redirects, headers, ISR, server actions or on-request image resizing | Redirects and headers in nginx; images resized at build time (see Images); the site has no server logic |
 | Server and client components | `"use client"` boundaries to place correctly | @med-o/ui is marked `"use client"`; pages stay server components, examples are client components |
 | Fast major releases | About one major a year | Upgrade once per major; content and examples do not depend on Next.js APIs |
@@ -232,13 +232,13 @@ The same bar as the components: checks run on every pull request and a failing o
 |---|---|---|
 | Accessibility | WCAG 2.2 AA, axe on every page in Light and Dark; keyboard path through header, search and one example per page | Playwright + axe |
 | Screen reader | Manual run of the site's own flows (search, navigation, theme switch) before launch, like a component | NVDA, VoiceOver, TalkBack |
-| Performance | Lighthouse 95+ on mobile; no page over 100 kB of JavaScript; LCP under 2.5 s | Lighthouse CI |
+| Performance | Lighthouse 95+ on mobile; no page over 270 kB of JavaScript (gzip); LCP under 2.5 s | Lighthouse CI, budget script |
 | Content | Required sections present; front matter valid; no broken internal links; code samples type-check | Content schema, link checker, `tsc` |
 | Visual | Screenshots of each page template in Light, Dark and at 390 px | Playwright |
 | SEO | Title and description per page, canonical URLs, sitemap, Open Graph image per page | Next.js sitemap, build check |
 | Spelling | US English, the design system's word list | cspell |
 
-Targets for Lighthouse and page weight are proposals to confirm after the first build.
+Targets for Lighthouse are proposals to confirm after the first build. The JavaScript budget comes from the phase 0 build: every page loads about 262 kB gzip. React Aria takes 98 kB, React 75 kB, Next.js 65 kB, @med-o/ui 15 kB and the site's own code 4 kB. The first proposal of 100 kB is out of reach, because React and Next.js alone take 140 kB. The budget of 270 kB stops regressions. The next lever is React Aria: it ships date code the site does not use.
 
 ## Hosting and operations
 
