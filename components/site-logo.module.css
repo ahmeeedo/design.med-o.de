@@ -2,6 +2,7 @@
  * Site logo (Figma Site/Logo): the official med.o wordmark, a divider and the product name.
  * The wordmark is never recolored: Light shows logo-rgb.svg, Dark logo-white.svg. Dark means data-theme="dark", or
  * no data-theme while the system is dark – the same rule as the tokens.
+ * From 768 to 1023 px the header has no room for the product name, so only the wordmark shows.
  */
 .logo {
   display: flex;
@@ -24,6 +25,13 @@
 
 .white {
   display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .divider,
+  .name {
+    display: none;
+  }
 }
 
 :global([data-theme='dark']) .rgb {

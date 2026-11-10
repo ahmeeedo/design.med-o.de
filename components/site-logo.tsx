@@ -1,6 +1,7 @@
 /**
  * Site logo: wordmark plus "Design System", a link to the home page. Both wordmark files are in the HTML; CSS shows
- * the one that fits the theme, so the logo is right before any script runs.
+ * the one that fits the theme, so the logo is right before any script runs. From 768 to 1023 px only the wordmark
+ * shows, so the page links fit next to it.
  */
 import Image from 'next/image';
 import NextLink from 'next/link';
@@ -15,7 +16,7 @@ export function SiteLogo() {
       <Image src="/logo-rgb.svg" alt="" {...SIZE} priority className={`${styles.wordmark} ${styles.rgb}`} />
       <Image src="/logo-white.svg" alt="" {...SIZE} priority className={`${styles.wordmark} ${styles.white}`} />
       <span className={styles.divider} aria-hidden="true" />
-      <span className="medo-text-label-md">Design System</span>
+      <span className={`medo-text-label-md ${styles.name}`}>Design System</span>
     </NextLink>
   );
 }
