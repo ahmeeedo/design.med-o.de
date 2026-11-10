@@ -4,6 +4,7 @@
 # ten. Major updates stay separate: each may need code changes and its own decision.
 # New versions wait 3 days before Dependabot proposes them (its default cooldown), so a broken release is often pulled
 # before it reaches us.
+# Some majors are ignored until the stack can take them; each rule below says when to remove it.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -12,6 +13,17 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: '@med-o/*'
+      # Node types move together with the Node runtime (.nvmrc, engines, Dockerfile), which is on 24.
+      - dependency-name: '@types/node'
+        versions: ['>=25']
+      # eslint-config-next brings eslint-plugin-react, eslint-plugin-import and eslint-plugin-jsx-a11y, which accept
+      # ESLint only up to 9. Remove this rule when all three accept ESLint 10.
+      - dependency-name: eslint
+        versions: ['>=10']
+      # typescript-eslint (from eslint-config-next) accepts TypeScript below 6.1 only. Remove this rule when it accepts
+      # TypeScript 7.
+      - dependency-name: typescript
+        versions: ['>=6.1']
     groups:
       npm-minor-and-patch:
         update-types: [minor, patch]
