@@ -62,8 +62,7 @@ jobs:
 
   a11y:
     needs: build
-    # Fixed OS: Playwright only installs system libraries on Ubuntu versions it knows. Raise this together with a
-    # Playwright update.
+    # Fixed OS: Chromium relies on the libraries of this image. Raise this together with a Playwright update.
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -75,8 +74,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # Chromium plus the system libraries it needs (download takes seconds, no cache needed).
-      - run: npx playwright install --with-deps chromium
+      # Chromium only, without apt: the runner image already has the libraries Chromium needs, and --with-deps fails
+      # whenever the Ubuntu mirrors are down (it only added fonts the site does not use). Download takes seconds.
+      - run: npx playwright install chromium
       - uses: actions/download-artifact@v8
         with:
           name: site
@@ -104,7 +104,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
       - uses: actions/download-artifact@v8
         with:
           name: site
