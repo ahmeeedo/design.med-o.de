@@ -1,6 +1,6 @@
-# Handoff: phase 1, templates
+# Handoff: phase 1 (templates) and phase 2 (content)
 
-State on 2026-11-11. The concept (`docs/concept.md`) says what the site is and why. This file says where we stand, where the designs are and what phase 1 has to do.
+State on 2026-11-13. The concept (`docs/concept.md`) says what the site is and why. This file says where we stand, where the designs are and what phases 1 and 2 have to do.
 
 ## Where we stand
 
@@ -70,6 +70,84 @@ Tabs as routes or as `#fragment`: with one route per tab, each tab is its own pa
 - #60 drawer without a visible header: the tablet navigation.
 - #40 bundle: keeps the budget from growing.
 - Likely new: a Carousel in code (Figma only today, for Showcase); `_Table cell` header and code cells; `Site/Release` shared by Updates and Changelog.
+
+## Phase 2: content
+
+Starts when the phase 1 templates are approved. Today phase 1 is planned, not built: `main` has the shell and the Introduction page only.
+
+Goal: every foundation, guide and pattern page and every Stable and Beta component page lives on the site, on the approved templates. Gate: all pages are on dev-design.med-o.de, all checks are green, and you have approved each batch.
+
+### Scope
+
+| Area | Pages | Source today |
+|---|---|---|
+| Overview | Getting started (Introduction and Changelog exist after phase 1) | New text |
+| Guides | Theming, Languages, Versioning & support (with Component status), Screen reader testing (Styling exists) | `apps/storybook/src/guides/*.mdx` |
+| Foundations | Typography, Spacing & sizes, Elevation & motion, Icons, Accessibility, Content, Long content (Colors exists) | `apps/storybook/src/foundations/*.mdx` |
+| Patterns | Account, Multi-step form, Search, Delete (Form exists) | `apps/storybook/src/patterns/*` |
+| Components | 41 Beta components (Button, the only Stable one, exists) | Stories and their `medo` parameters, through the manifest |
+
+The 41 Beta components by group: Layout 3 (Container, Grid, Stack) · Actions 4 (Icon Button, Link, Menu, Toggle Button) · Forms 11 (Checkbox, Combobox, Date & Time, Listbox, Radio, Search, Select, Slider, Switch, Text Field, Upload) · Overlays 5 (Bottom Sheet, Dialog, Drawer, Popover, Tooltip) · Feedback 5 (Alert, Badge, Empty State, Progress, Toast) · Navigation 4 (Breadcrumbs, Navigation, Pagination, Tabs) · Data display 9 (Accordion, Avatar, Bulk Action Bar, Card, Image & Media, List, List View, Table, Tag).
+
+Not in phase 2: the 5 Experimental components (Code block, Inline code, Form, On this page, Stepper) – see the decisions below. The Experimental Quick search trigger is part of the Search page.
+
+### Where each part of a page comes from
+
+Nothing is written twice. Data that Storybook shows as well stays in the stories and reaches the site through the manifest; text only the site needs lives in MDX here.
+
+| Part | Source |
+|---|---|
+| Hero: status, Storybook link, "Updated …" | Manifest (status, Storybook id), git |
+| Playground | The component from `@med-o/ui` with the docs controls from the manifest |
+| When, when not, do, don't | `medo.usage` in the stories → manifest |
+| Keyboard, notes, screen reader steps and results | `medo.a11y` in the stories → manifest |
+| Classes and states (Styling tab) | `medo.styling` in the stories → manifest |
+| Tokens per element (Styling tab: color, typography, structure) | New: read from the component CSS at build of the manifest (each `var(--medo-…)` per class) |
+| Anatomy and spacing images | Exported as SVG from the component's documentation frame in the Figma library, committed here |
+| Formatting, content rules, variants in detail, pattern and guide text | MDX in this repo |
+| Token tables (foundations) | `@med-o/design-tokens` (`dist/docs`) |
+
+### Order
+
+Agree on each batch before you build it. Each batch is one pull request here; component batches need one in the design system first.
+
+1. **Guides** (4 pages, text only): fastest proof that the migration flow works.
+2. **Foundations** (7 pages): token tables from the package; Icons reads the icon list from lucide and the docs Figma page.
+3. **Patterns** (4 pages): live examples from `@med-o/ui`, linked components with their status.
+4. **Getting started.**
+5. **Components**, by Storybook group: Actions, Forms, Overlays, Feedback, Navigation, Data display, Layout. Per group:
+   - Design system pull request: docs controls for each Playground, screen reader steps rewritten for the Playground (like Button in phase 1), Figma link per component, token data in the manifest, a changeset.
+   - Docs pull request: the pages, the exported SVGs, the MDX text.
+
+Per page, before it counts as done:
+
+- Required sections of its type present (the content schema fails the build otherwise).
+- Writing rules from the concept: US English, sentence case, one rule per sentence with its reason, numbers where a decision needs them.
+- Code samples type-check; links resolve; cspell passes.
+- axe in Light and Dark; screenshots in Light, Dark and at 390 px.
+- It appears in the sidebar, in search (with its token names and props) and in previous and next.
+
+### Checks to add in phase 2
+
+- Lighthouse CI on mobile: 95+ and LCP under 2.5 s on one page per type.
+- A check that every page in the docs tree exists and every Beta or Stable component in the manifest has a page.
+- The JavaScript budget stays at 270 kB per page; #40 (bundle) in the design system is the lever if pages with many live examples grow.
+
+### Design system work phase 2 needs
+
+- Manifest: token data per class, Figma link per component, docs controls per Playground.
+- Screen reader steps for the Playground in every Beta component's stories (41 files).
+- Open issues that the pages show: #53 (status badge in the sidebar) and #54 (filter field) – the sidebar grows from 1 to about 70 pages.
+- Likely new: a header and a code cell for Table (token tables), and the Carousel in code if phase 1 has not added it.
+
+### Decisions to make
+
+| Question | Proposal |
+|---|---|
+| Experimental components | Not in phase 2. They get pages in phase 3, before the launch, because the launch scope is all components. Until then they change too often. |
+| Alert Dialog | One page with Dialog, as in Storybook; the docs tree lists Alert Dialog as a link to that section. |
+| Storybook MDX pages after the move | Stay until the launch; in phase 3 each one becomes a short page that links to the new one. |
+| Spec images | Exported by hand from Figma and committed as SVG; an export script follows only if updates become frequent. |
 
 ## Figma
 
