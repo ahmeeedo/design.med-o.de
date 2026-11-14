@@ -1,6 +1,7 @@
 /**
  * The keyboard path through the site shell, at desktop (1440) and phone (390) width: skip link, header, search and
- * the mobile menu. Elements are found by role and accessible name, as a screen reader user meets them, so a renamed
+ * the mobile menu. Two docs layout steps run at their own width: "On this page" as a disclosure (1024) and the docs
+ * Drawer behind the Menu button above the page (768). Elements are found by role and accessible name, as a screen reader user meets them, so a renamed
  * or hidden control fails here.
  * Each test waits for hydration first: before it, the static HTML has no key handlers, and a key press would be lost.
  */
@@ -8,6 +9,9 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const DESKTOP = { width: 1440, height: 900 };
 const PHONE = { width: 390, height: 844 };
+const LAPTOP = { width: 1024, height: 768 };
+const TABLET = { width: 768, height: 1024 };
+const DOCS_PAGE = '/docs/overview/introduction';
 
 /** Opens a page and waits until React has hydrated the header (React adds its fiber key to hydrated elements). */
 async function open(page: Page, url: string) {
@@ -167,4 +171,38 @@ test.describe('phone', () => {
       await expect(button).toBeFocused();
     });
   }
+});
+
+test.describe('laptop', () => {
+  test.use({ viewport: LAPTOP });
+
+  test('"On this page" opens with Enter and a link moves focus to its section', async ({ page }) => {
+    await open(page, DOCS_PAGE);
+    const toggle = page.getByRole('main').getByRole('button', { name: 'On this page' });
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    const feedback = page.getByRole('navigation', { name: 'On this page' }).getByRole('link', { name: 'Feedback' });
+    await feedback.focus();
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.getByRole('heading', { name: 'Feedback', level: 2 })).toBeFocused();
+  });
+});
+
+test.describe('tablet', () => {
+  test.use({ viewport: TABLET });
+
+  test('docs drawer opens with Enter, Esc closes it and returns focus to the Menu button', async ({ page }) => {
+    await open(page, DOCS_PAGE);
+    const button = page.getByRole('main').getByRole('button', { name: 'Menu' });
+    await button.focus();
+    await page.keyboard.press('Enter');
+    const drawer = page.getByRole('dialog', { name: 'Docs' });
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole('searchbox', { name: 'Filter this menu' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(drawer).toBeHidden();
+    await expect(button).toBeFocused();
+  });
 });
