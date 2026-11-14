@@ -46,7 +46,16 @@ jobs:
         with:
           # The branch as pushed – what the pull request shows, not the merge with main.
           ref: ${{ github.event.pull_request.head.sha }}
+          # Full history: the page dates come from the last commit of every page.
+          fetch-depth: 0
           persist-credentials: false
+
+      # The image has no .git (.dockerignore), so the dates are written here and enter the build context with
+      # `COPY . .`. The script has no dependencies: Node alone, no npm ci.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/page-dates.mjs
 
       - name: Log in to ghcr.io
         env:
