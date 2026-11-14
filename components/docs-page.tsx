@@ -8,6 +8,7 @@
 import type { Metadata } from 'next';
 import * as runtime from 'react/jsx-runtime';
 import { evaluate } from '@mdx-js/mdx';
+import remarkGfm from 'remark-gfm';
 import { OnThisPage, Stack } from '@med-o/ui';
 import styles from '../app/docs/docs.module.css';
 import { checkSections } from './content-schema';
@@ -17,6 +18,7 @@ import { DocsTabs } from './docs-tabs';
 import { FEEDBACK_ID, FeedbackSection } from './feedback-section';
 import { mdxComponents } from './mdx-components';
 import { getUpdated } from './page-dates';
+import { rehypeCodeMeta } from './rehype-code-meta';
 import { rehypeSections } from './rehype-sections';
 import { storybookDocsUrl } from './site-data';
 import { pageMetadata } from './site-metadata';
@@ -43,7 +45,8 @@ export async function DocsPage({ doc }: { doc: DocPage }) {
   const outline: { id: string; label: string }[] = [];
   const { default: Content } = await evaluate(doc.file, {
     ...runtime,
-    rehypePlugins: [[rehypeSections, { headings, outline }]],
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [rehypeCodeMeta, [rehypeSections, { headings, outline }]],
   });
   checkSections(doc.file.path, doc.type, doc.tab?.slug, headings);
 
