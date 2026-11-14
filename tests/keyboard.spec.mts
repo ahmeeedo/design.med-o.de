@@ -31,6 +31,8 @@ const skipLink = (page: Page) => page.getByRole('link', { name: 'Skip to content
 const inHeader = (page: Page, role: 'link' | 'button', name: string) =>
   page.getByRole('banner').getByRole(role, { name, exact: true });
 const searchDialog = (page: Page) => page.getByRole('dialog', { name: 'Search the docs' });
+/** The desktop trigger is the field-like button “Search …”; on phones it is the icon button “Search”. */
+const searchTrigger = (page: Page, width: 'desktop' | 'phone') => inHeader(page, 'button', width === 'desktop' ? 'Search …' : 'Search');
 
 test.describe('desktop', () => {
   test.use({ viewport: DESKTOP });
@@ -50,7 +52,7 @@ test.describe('desktop', () => {
       inHeader(page, 'link', 'Showcase'),
       inHeader(page, 'link', 'Docs'),
       inHeader(page, 'link', 'Updates'),
-      inHeader(page, 'button', 'Search'),
+      searchTrigger(page, 'desktop'),
       inHeader(page, 'link', 'Give feedback (opens in a new tab)'),
       inHeader(page, 'button', 'Resources'),
     ]);
@@ -94,7 +96,7 @@ test.describe('desktop', () => {
 
   test('search finds a page and Enter opens it', async ({ page }) => {
     await open(page, '/');
-    const button = inHeader(page, 'button', 'Search');
+    const button = searchTrigger(page, 'desktop');
     await button.focus();
     await page.keyboard.press('Enter');
     await expect(searchDialog(page)).toBeVisible();
@@ -107,7 +109,7 @@ test.describe('desktop', () => {
 
   test('Esc clears a filled search first, then closes it and returns focus to the button', async ({ page }) => {
     await open(page, '/');
-    const button = inHeader(page, 'button', 'Search');
+    const button = searchTrigger(page, 'desktop');
     await button.focus();
     await page.keyboard.press('Enter');
     const field = page.getByRole('searchbox', { name: 'Search the docs' });
@@ -137,7 +139,7 @@ test.describe('phone', () => {
     await expectTabOrder(page, [
       skipLink(page),
       inHeader(page, 'link', 'med.o Design System home'),
-      inHeader(page, 'button', 'Search'),
+      searchTrigger(page, 'phone'),
       inHeader(page, 'button', 'Menu'),
     ]);
   });

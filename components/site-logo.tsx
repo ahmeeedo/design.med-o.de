@@ -16,7 +16,7 @@ export function SiteLogo() {
       <Image src="/logo-rgb.svg" alt="" {...SIZE} priority className={`${styles.wordmark} ${styles.rgb}`} />
       <Image src="/logo-white.svg" alt="" {...SIZE} priority className={`${styles.wordmark} ${styles.white}`} />
       <span className={styles.divider} aria-hidden="true" />
-      <span className={`medo-text-label-md ${styles.name}`}>Design System</span>
+      <span className={`medo-text-label-md medo-text-secondary ${styles.name}`}>Design System</span>
     </NextLink>
   );
 }

@@ -1,26 +1,17 @@
 /**
- * "Give feedback": a link that looks like a secondary Button and opens a new GitHub issue in a new tab.
- * Button has no href, so this uses the Button classes on a React Aria Link – the way SiteHeader renders its actions.
+ * "Give feedback": a secondary Button that links to a new GitHub issue in a new tab. The hidden new-tab text and
+ * rel="noopener noreferrer" come from the component.
  */
 'use client';
 
-import { Link } from 'react-aria-components';
+import { Button } from '@med-o/ui';
 import { ExternalLink } from 'lucide-react';
 import { FEEDBACK_URL } from './site-data';
 
-export function FeedbackLink({ size = 'md', className }: { size?: 'md' | 'lg'; className?: string }) {
+export function FeedbackLink({ size = 'md' }: { size?: 'md' | 'lg' }) {
   return (
-    <Link
-      href={FEEDBACK_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={['medo-button', 'medo-button--secondary', `medo-button--${size}`, className].filter(Boolean).join(' ')}
-    >
-      <span className="medo-button__label">Give feedback</span>
-      <span className="medo-button__icon" aria-hidden="true">
-        <ExternalLink />
-      </span>
-      <span className="medo-visually-hidden"> (opens in a new tab)</span>
-    </Link>
+    <Button variant="secondary" size={size} href={FEEDBACK_URL} target="_blank" endIcon={<ExternalLink />}>
+      Give feedback
+    </Button>
   );
 }
