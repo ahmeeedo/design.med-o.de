@@ -1,8 +1,0 @@
-/* Mobile menu sections (Figma 11:2210, 79:4133): a line between the page links and the rest. */
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--medo-layout-gap-content);
-  padding-block-start: var(--medo-space-4);
-  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
-}

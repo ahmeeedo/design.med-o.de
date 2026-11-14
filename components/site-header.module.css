@@ -1,28 +1,20 @@
 /*
- * Site header layout on top of the library classes medo-site-header*. Two things the library cannot express yet:
- * - the page links sit in the middle (SiteHeader puts them after the logo),
- * - the switch to the compact header at 768 px happens in CSS, so the static HTML is right on every width without
- *   waiting for a script. The compact values are the ones of medo-site-header--compact.
+ * Search trigger of the header (Figma 10:2250): the field-like trigger from 1280 px, 280 wide (size/width/lg), the
+ * icon button below. The library switches to the compact header at 768 px itself; the 1280 px step is the one rule
+ * it does not cover.
  */
-.pages {
-  display: flex;
-  justify-content: center;
+.field {
+  inline-size: var(--medo-size-width-lg);
 }
 
-@media (max-width: 767.98px) {
-  .header {
-    gap: var(--medo-space-2);
-    block-size: calc(var(--medo-size-control-md) + 2 * var(--medo-space-2));
-    padding-inline: var(--medo-space-4) var(--medo-space-2);
-  }
-
-  .wide {
+@media (max-width: 1279.98px) {
+  .field {
     display: none;
   }
 }
 
-@media (min-width: 768px) {
-  .narrow {
+@media (min-width: 1280px) {
+  .icon {
     display: none;
   }
 }

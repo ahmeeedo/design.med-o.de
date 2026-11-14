@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { Container, Stack } from '@med-o/ui';
 import { PageMain } from '../../components/page-main';
-import text from '../../components/text.module.css';
 
 export const metadata: Metadata = { title: 'Updates · med.o Design System' };
 
@@ -12,7 +11,7 @@ export default function Updates() {
       <Container size="prose">
         <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
           <h1 className="medo-text-heading-xl">Updates</h1>
-          <p className={`medo-text-body-lg ${text.secondary}`}>
+          <p className="medo-text-body-lg medo-text-secondary">
             Here you find the latest releases of <span translate="no">@med-o/ui</span> and{' '}
             <span translate="no">@med-o/design-tokens</span>, newest first.
           </p>

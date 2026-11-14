@@ -15,7 +15,6 @@ import { z } from 'zod';
 import { mdxComponents } from './mdx-components';
 import { PageMain } from './page-main';
 import { rehypeSections } from './rehype-sections';
-import text from './text.module.css';
 
 const FrontMatter = z.strictObject({
   title: z.string().min(1),
@@ -46,7 +45,7 @@ export async function LegalPage({ name }: { name: LegalName }) {
         <Stack gap="group">
           <Stack gap="content">
             <h1 className="medo-text-heading-xl">{page.title}</h1>
-            <p className={`medo-text-body-lg ${text.secondary}`}>{page.excerpt}</p>
+            <p className="medo-text-body-lg medo-text-secondary">{page.excerpt}</p>
           </Stack>
           <Content components={mdxComponents} />
         </Stack>
