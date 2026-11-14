@@ -1,56 +1,79 @@
 /**
- * Site header (Figma Site/Header): logo, the page links Showcase · Docs · Updates in the middle, and the actions
- * search, Give feedback and resources. Below 768 px: logo, search and the menu button.
- * SiteHeader from @med-o/ui takes no centered links and no search or popover slot yet, so this builds the same
- * <header> from its classes. Sticky; the divider appears once the page scrolls, as in SiteHeader.
+ * Site header (Figma Site/Header 10:2250): logo, the page links Showcase · Docs · Updates in the middle, and the
+ * actions search, Give feedback and resources. Below 768 px the library shows logo, search and the menu button; the
+ * menu is its fullscreen sheet (Figma 11:2210 on docs pages, 79:4133 elsewhere) with the page links, a Contents |
+ * Resources switch with the docs tree on docs pages, and the theme select and Give feedback pinned at the bottom.
+ * The search dialog is rendered once here; every trigger opens the same one.
  */
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { NavItem, NavList } from '@med-o/ui';
+import type { Key } from 'react-aria-components';
+import { IconButton, NavItem, QuickSearchTrigger, SiteHeader as MedoSiteHeader, Stack, ToggleButton, ToggleButtonGroup } from '@med-o/ui';
+import { Grip, Search } from 'lucide-react';
+import { DocsNav } from './docs-nav';
 import { FeedbackLink } from './feedback-link';
-import { MobileMenu } from './mobile-menu';
-import { ResourcesMenu } from './resources';
+import { ResourcesMenu, ResourcesNav } from './resources';
 import { PAGES, isWithin, type DocsArea } from './site-data';
 import { SiteLogo } from './site-logo';
 import { SiteSearch } from './site-search';
+import { ThemeSelect } from './theme-select';
 import styles from './site-header.module.css';
-
-function subscribeScroll(onChange: () => void) {
-  window.addEventListener('scroll', onChange, { passive: true });
-  return () => window.removeEventListener('scroll', onChange);
-}
-
-/** True once the page is scrolled; false in the static HTML. */
-const useScrolled = () => useSyncExternalStore(subscribeScroll, () => window.scrollY > 0, () => false);
 
 export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
   const pathname = usePathname();
-  const scrolled = useScrolled();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const openSearch = () => setSearchOpen(true);
+  const searchIcon = (className?: string) => (
+    <IconButton variant="ghost" size="md" icon={<Search />} aria-label="Search" shortcut="Mod+K" className={className} onPress={openSearch} />
+  );
 
   return (
-    <header className={`medo-site-header ${styles.header}`} data-scrolled={scrolled || undefined}>
-      <div className="medo-site-header__logo">
-        <SiteLogo />
-      </div>
-      <NavList variant="header" aria-label="Main" className={`medo-site-header__nav ${styles.pages} ${styles.wide}`}>
+    <>
+      <MedoSiteHeader
+        logo={<SiteLogo />}
+        align="center"
+        actions={
+          <>
+            <QuickSearchTrigger className={styles.field} onPress={openSearch} />
+            {searchIcon(styles.icon)}
+            <FeedbackLink />
+            <ResourcesMenu />
+          </>
+        }
+        compactActions={searchIcon()}
+        menuIcon={<Grip />}
+        menuContent={isWithin(pathname, '/docs') ? <DocsMenu docsTree={docsTree} /> : <ResourcesNav variant="sheet" />}
+        menuActions={
+          <>
+            <ThemeSelect />
+            <FeedbackLink size="lg" />
+          </>
+        }
+      >
         {PAGES.map((page) => (
           <NavItem key={page.href} href={page.href} isCurrent={isWithin(pathname, page.match)}>
             {page.label}
           </NavItem>
         ))}
-      </NavList>
-      <div className="medo-site-header__actions">
-        <SiteSearch docsTree={docsTree} />
-        <FeedbackLink className={styles.wide} />
-        <div className={styles.wide}>
-          <ResourcesMenu />
-        </div>
-        <div className={styles.narrow}>
-          <MobileMenu docsTree={docsTree} />
-        </div>
-      </div>
-    </header>
+      </MedoSiteHeader>
+      <SiteSearch isOpen={searchOpen} onOpenChange={setSearchOpen} docsTree={docsTree} />
+    </>
+  );
+}
+
+/** Docs pages in the mobile menu: a switch between the docs tree and the resources (Figma 11:2210). */
+function DocsMenu({ docsTree }: { docsTree: DocsArea[] }) {
+  const [view, setView] = useState<Set<Key>>(new Set(['contents']));
+
+  return (
+    <Stack gap="content">
+      <ToggleButtonGroup aria-label="Menu content" size="lg" fullWidth disallowEmptySelection selectedKeys={view} onSelectionChange={setView}>
+        <ToggleButton id="contents">Contents</ToggleButton>
+        <ToggleButton id="resources">Resources</ToggleButton>
+      </ToggleButtonGroup>
+      {view.has('resources') ? <ResourcesNav variant="sheet" /> : <DocsNav areas={docsTree} />}
+    </Stack>
   );
 }

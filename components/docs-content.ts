@@ -240,6 +240,6 @@ export async function getDocsTree(): Promise<DocsArea[]> {
     label: area.label,
     pages: pages
       .filter((p) => p.area === area.id && p.href === p.pageHref)
-      .map((p) => ({ label: p.title, href: p.href })),
+      .map((p) => ({ label: p.title, href: p.href, status: p.status })),
   })).filter((area) => area.pages.length > 0);
 }

@@ -4,7 +4,6 @@
  */
 import { Container, Link, Stack } from '@med-o/ui';
 import ui from '@med-o/ui/package.json';
-import text from './text.module.css';
 import styles from './site-footer.module.css';
 
 const LINKS = [
@@ -20,7 +19,7 @@ export function SiteFooter() {
     <footer className={styles.footer}>
       <Container>
         <Stack direction="horizontal" justify="between" align="center" wrap gap="content" className={styles.row}>
-          <p className={`medo-text-caption ${text.secondary}`}>
+          <p className="medo-text-caption medo-text-secondary">
             med.o Design System · Version <span translate="no">{ui.version}</span> · MIT License
           </p>
           <nav aria-label="Footer">

@@ -7,7 +7,6 @@ import { CodeBlock, Container, Stack } from '@med-o/ui';
 import { highlight } from '@med-o/ui/highlight';
 import { PageMain } from '../components/page-main';
 import { pageMetadata } from '../components/site-metadata';
-import text from '../components/text.module.css';
 
 export const metadata: Metadata = pageMetadata({ path: '/' });
 
@@ -19,7 +18,7 @@ export default async function Home() {
       <Container size="prose">
         <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
           <h1 className="medo-text-heading-xl">med.o Design System</h1>
-          <p className={`medo-text-body-lg ${text.secondary}`}>
+          <p className="medo-text-body-lg medo-text-secondary">
             Components, tokens and guidelines for med.o products. Install the packages and start with your first page.
           </p>
           <div translate="no">
