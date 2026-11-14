@@ -5,7 +5,9 @@
     "node": ">=24"
   },
   "scripts": {
+    "predev": "node scripts/page-dates.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/page-dates.mjs",
     "build": "next build && pagefind --site out --exclude-selectors \".medo-code-block__copy\"",
     "lint": "eslint . --max-warnings 0 && next typegen && tsc --noEmit",
     "test:a11y": "playwright test a11y",

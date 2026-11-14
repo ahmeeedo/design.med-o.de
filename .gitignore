@@ -7,6 +7,9 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 
+# Written by scripts/page-dates.mjs before every build
+generated/
+
 # Playwright
 test-results/
 playwright-report/
