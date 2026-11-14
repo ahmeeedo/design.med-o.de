@@ -38,6 +38,16 @@ const searchDialog = (page: Page) => page.getByRole('dialog', { name: 'Search th
 /** The desktop trigger is the field-like button “Search …”; on phones it is the icon button “Search”. */
 const searchTrigger = (page: Page, width: 'desktop' | 'phone') => inHeader(page, 'button', width === 'desktop' ? 'Search …' : 'Search');
 
+/**
+ * Checks that a search result is the active option. Focus stays in the search field, which points to the active option
+ * with aria-activedescendant; typing makes the first result active, and the arrow keys move from there.
+ */
+async function expectActiveOption(page: Page, name: string) {
+  const option = searchDialog(page).getByRole('option', { name });
+  const id = await option.getAttribute('id');
+  await expect(searchDialog(page).getByRole('searchbox')).toHaveAttribute('aria-activedescendant', id ?? '');
+}
+
 test.describe('desktop', () => {
   test.use({ viewport: DESKTOP });
 
@@ -106,7 +116,12 @@ test.describe('desktop', () => {
     await expect(searchDialog(page)).toBeVisible();
     await page.keyboard.type('install');
     await expect(searchDialog(page).getByRole('option', { name: 'Introduction' })).toBeVisible();
+    // The Overview group comes before the site pages, so the docs page is the first result and active at once.
+    await expectActiveOption(page, 'Introduction');
     await page.keyboard.press('ArrowDown');
+    await expectActiveOption(page, 'med.o Design System');
+    await page.keyboard.press('ArrowUp');
+    await expectActiveOption(page, 'Introduction');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL('/docs/overview/introduction');
   });
