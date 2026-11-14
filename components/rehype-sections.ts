@@ -1,15 +1,16 @@
 /**
  * Rehype plugin for docs pages: puts each "## heading" and the content after it into a <section>, gives the heading
  * an id from its text (so /docs/components/button/styling#color reaches the Color section) and collects the heading
- * texts for the content schema check. Sections take the spacing rule `group` between them and `content` inside
- * (Figma 106:3625), and give the page an outline that "On this page" can follow later. Content before the first
- * heading becomes its own section.
+ * texts for the content schema check and, with their ids, for "On this page". Sections take the spacing rule `group` between them and `content` inside
+ * (Figma 106:3625). Content before the first heading becomes its own section.
  */
 import type { Element, ElementContent, Root, RootContent } from 'hast';
 
 export interface SectionsOptions {
   /** Receives the text of every "##" heading in document order. */
   headings?: string[];
+  /** Receives the id and the text of every "##" heading in document order. */
+  outline?: { id: string; label: string }[];
 }
 
 const isHeading2 = (node: RootContent): node is Element => node.type === 'element' && node.tagName === 'h2';
@@ -26,7 +27,7 @@ const slugOf = (text: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, '-')
     .replace(/^-|-$/g, '');
 
-export function rehypeSections({ headings }: SectionsOptions = {}) {
+export function rehypeSections({ headings, outline }: SectionsOptions = {}) {
   return (tree: Root) => {
     const kept: RootContent[] = [];
     const sections: Element[] = [];
@@ -53,6 +54,7 @@ export function rehypeSections({ headings }: SectionsOptions = {}) {
         const seen = ids.get(slug) ?? 0;
         ids.set(slug, seen + 1);
         node.properties.id ??= seen ? `${slug}-${seen + 1}` : slug;
+        outline?.push({ id: String(node.properties.id), label: text });
       }
       current.children.push(node as ElementContent);
     }

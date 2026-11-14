@@ -1,0 +1,22 @@
+/*
+ * Feedback box (Figma Site/Feedback 120:3529): surface/subtle with a border and radius/lg, padding space/6. Below
+ * 640 px it stacks, the button under the text at its own width (Mobile layout).
+ */
+.box {
+  padding: var(--medo-space-6);
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-lg);
+  background: var(--medo-color-surface-subtle);
+}
+
+.text {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+@media (max-width: 639.98px) {
+  .box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

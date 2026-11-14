@@ -2,8 +2,9 @@
 import type { Metadata } from 'next';
 import { Container, Stack } from '@med-o/ui';
 import { PageMain } from '../../components/page-main';
+import { pageMetadata } from '../../components/site-metadata';
 
-export const metadata: Metadata = { title: 'Updates · med.o Design System' };
+export const metadata: Metadata = pageMetadata({ title: 'Updates', path: '/updates' });
 
 export default function Updates() {
   return (

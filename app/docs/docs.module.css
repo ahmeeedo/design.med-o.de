@@ -1,9 +1,12 @@
 /*
- * Docs layout (Figma 11:1204, 11:1916): from 1024 px a fixed sidebar column (280 px, size/width/lg) that scrolls on
- * its own below the sticky header; from 768 to 1023 px a Menu button above the page opens the same tree in a
- * Drawer; below 768 px the tree is part of the mobile menu.
- * The page sits left in its column with the page margin, from 1024 px with space/12 (48) as in Figma 106:3625, and
- * grows up to container/lg. Running text stays within container/prose.
+ * Docs layout (Figma 11:1204, 11:1916, 106:3625, 121:2152).
+ * Sidebar: from 1024 px a fixed column (280 px, size/width/lg) that scrolls on its own below the sticky header; from
+ * 768 to 1023 px a Menu button above the page opens the same tree in a Drawer (panel, tree and settings are shared);
+ * below 768 px the tree is part of the mobile menu.
+ * Page: the page margin on both sides, from 1024 px space/12 (48) as in Figma. Hero, tabs, text and examples share
+ * one column of up to container/lg. From 1280 px "On this page" is a rail (240 px, size/width/md) right of the
+ * column, one group gap away and sticky below the header, and the page gives up its right margin, so at 1440 px the
+ * column is 824 px as in Figma; below 1280 px it is a disclosure under the hero.
  */
 .docs {
   display: grid;
@@ -15,14 +18,40 @@
   display: none;
 }
 
+/* Tree above, settings pinned at the bottom with a line above them: the sidebar and the drawer. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--medo-layout-gap-content);
+  min-block-size: 100%;
+}
+
+.tree {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+}
+
+.settings {
+  padding-block-start: var(--medo-space-4);
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+}
+
 .page {
-  box-sizing: content-box;
-  max-inline-size: var(--medo-container-lg);
   padding-inline: var(--medo-layout-margin);
 }
 
-.prose {
-  max-inline-size: var(--medo-container-prose);
+.article {
+  display: grid;
+  grid-template-columns: minmax(0, var(--medo-container-lg));
+}
+
+.column {
+  min-inline-size: 0;
+}
+
+.rail {
+  display: none;
 }
 
 @media (max-width: 767.98px) {
@@ -43,19 +72,9 @@
     flex-direction: column;
     gap: var(--medo-layout-gap-content);
     block-size: calc(100dvh - var(--medo-space-16));
+    box-sizing: border-box;
     padding: var(--medo-space-4);
     border-inline-end: var(--medo-border-width-thin) solid var(--medo-color-border-default);
-  }
-
-  .tree {
-    flex: 1;
-    min-block-size: 0;
-    overflow-y: auto;
-  }
-
-  .settings {
-    padding-block-start: var(--medo-space-4);
-    border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
   }
 
   .drawer {
@@ -64,5 +83,28 @@
 
   .page {
     padding-inline: var(--medo-space-12);
+  }
+}
+
+@media (min-width: 1280px) {
+  .page {
+    padding-inline-end: 0;
+  }
+
+  .article {
+    grid-template-columns: minmax(0, var(--medo-container-lg)) var(--medo-size-width-md);
+    column-gap: var(--medo-layout-gap-group);
+  }
+
+  /* Level with the hero: below the header (space/16) and the page's top padding (space/8). */
+  .rail {
+    position: sticky;
+    inset-block-start: calc(var(--medo-space-16) + var(--medo-space-8));
+    display: block;
+    align-self: start;
+  }
+
+  .disclosure {
+    display: none;
   }
 }

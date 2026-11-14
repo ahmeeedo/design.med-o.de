@@ -17,13 +17,17 @@ import { SkipLink } from '@med-o/ui';
 import { getDocsTree } from '../components/docs-content';
 import { SiteFooter } from '../components/site-footer';
 import { SiteHeader } from '../components/site-header';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, shareMetadata } from '../components/site-metadata';
 import { ThemeScript } from '../components/theme-script';
 import { Providers } from './providers';
 import styles from './shell.module.css';
 
+// Defaults for every page. Pages add their canonical URL and share tags through pageMetadata (site-metadata.ts).
 export const metadata: Metadata = {
-  title: 'med.o Design System',
-  description: 'Guidelines, components and tokens for building med.o products, with live examples you can copy.',
+  metadataBase: SITE_URL,
+  title: { template: `%s · ${SITE_NAME}`, default: SITE_NAME },
+  description: SITE_DESCRIPTION,
+  ...shareMetadata(SITE_NAME, SITE_DESCRIPTION),
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

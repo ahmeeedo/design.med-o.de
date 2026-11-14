@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Container, Link, Stack } from '@med-o/ui';
 import { PageMain } from '../components/page-main';
 
-export const metadata: Metadata = { title: 'Page not found · med.o Design System' };
+export const metadata: Metadata = { title: 'Page not found' };
 
 export default function NotFound() {
   return (
