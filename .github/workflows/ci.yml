@@ -1,6 +1,7 @@
 # CI – one job per question, so a red check says what is wrong:
 #   lint     ESLint without warnings and the TypeScript check. Red = a code or type error.
 #   build    the static export builds (out/) and is passed on to the checks below. Red = a page does not build.
+#            Checks out the full history: the page dates come from git (scripts/page-dates.mjs).
 #   a11y     axe on every page in Light and Dark (WCAG 2.2 AA). Red = an accessibility violation: the log names the rule
 #            and the elements; the Playwright report is under Summary → Artifacts.
 #   keyboard the keyboard path at 1440 and 390 px: skip link, header, search, mobile menu. Red = a control is not
@@ -45,6 +46,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          # Full history: prebuild reads the last commit date of every page (scripts/page-dates.mjs).
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v7
         with:
