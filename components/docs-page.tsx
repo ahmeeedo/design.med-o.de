@@ -7,12 +7,14 @@
 import type { Metadata } from 'next';
 import * as runtime from 'react/jsx-runtime';
 import { evaluate } from '@mdx-js/mdx';
+import remarkGfm from 'remark-gfm';
 import { Stack } from '@med-o/ui';
 import styles from '../app/docs/docs.module.css';
 import { checkSections } from './content-schema';
 import type { DocPage } from './docs-content';
 import { DocsHero } from './docs-hero';
 import { mdxComponents } from './mdx-components';
+import { rehypeCodeMeta } from './rehype-code-meta';
 import { rehypeSections } from './rehype-sections';
 
 /** "Introduction" for a flat page, "Button · Styling" for a tab, the first one included. */
@@ -25,7 +27,7 @@ export const docMetadata = (doc: DocPage): Metadata => ({
 
 export async function DocsPage({ doc }: { doc: DocPage }) {
   const headings: string[] = [];
-  const { default: Content } = await evaluate(doc.file, { ...runtime, rehypePlugins: [[rehypeSections, { headings }]] });
+  const { default: Content } = await evaluate(doc.file, { ...runtime, remarkPlugins: [remarkGfm], rehypePlugins: [rehypeCodeMeta, [rehypeSections, { headings }]] });
   checkSections(doc.file.path, doc.type, doc.tab?.slug, headings);
 
   // Only the hero and the body are indexed for search; the area comes from the hero's category line.
