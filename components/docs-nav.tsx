@@ -7,16 +7,9 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Badge, NavGroup, NavItem, NavList, type BadgeTone } from '@med-o/ui';
-import type { Status } from './docs-content';
+import { Badge, NavGroup, NavItem, NavList } from '@med-o/ui';
 import { isWithin, type DocsArea } from './site-data';
-
-/** Pages that are not stable carry their status; stable pages carry nothing, as in the Figma sidebar. */
-const BADGES: Partial<Record<Status, { label: string; tone: BadgeTone }>> = {
-  experimental: { label: 'Experimental', tone: 'warning' },
-  beta: { label: 'Beta', tone: 'info' },
-  deprecated: { label: 'Deprecated', tone: 'danger' },
-};
+import { STATUS } from './status';
 
 export function DocsNav({ areas, onNavigate }: { areas: DocsArea[]; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -26,7 +19,8 @@ export function DocsNav({ areas, onNavigate }: { areas: DocsArea[]; onNavigate?:
       {areas.map((area) => (
         <NavGroup key={area.label} label={area.label}>
           {area.pages.map((page) => {
-            const badge = page.status && BADGES[page.status];
+            // Stable pages carry nothing, as in the Figma sidebar.
+            const badge = page.status && page.status !== 'stable' ? STATUS[page.status] : undefined;
             return (
               <NavItem
                 key={page.href}
