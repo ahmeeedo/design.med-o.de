@@ -15,6 +15,9 @@
     "check:js-budget": "node scripts/js-budget.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:content": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-content.mjs",
+    "check:samples": "node scripts/check-samples.mjs",
+    "check:spelling": "cspell lint --no-progress --no-config-search --show-suggestions",
+    "check:sitemap": "node scripts/check-sitemap.mjs",
     "smoke:data": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/smoke-data.mjs"
   },
   "dependencies": {
@@ -41,9 +44,11 @@
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "cspell": "^10.5.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.6",
     "pagefind": "^1.6.0",
+    "sharp": "^0.35.5",
     "typescript": "~6.0.3"
   }
 }
