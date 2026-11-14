@@ -48,11 +48,20 @@ jobs:
         with:
           # Exactly the commit CI tested – not a newer one that landed in the meantime.
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # Full history: the page dates come from the last commit of every page.
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Version
         id: version
         run: echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      # The image has no .git (.dockerignore), so the dates are written here and enter the build context with
+      # `COPY . .`. The script has no dependencies: Node alone, no npm ci.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/page-dates.mjs
 
       # Plain docker commands instead of third-party actions: the repository only allows actions from GitHub.
       # The runner has Docker with Buildx; the cache lives next to the image in the registry.
