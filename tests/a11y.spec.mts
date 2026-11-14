@@ -4,6 +4,8 @@
  * all scanned. Pages come from out/ (scripts/out-files.mjs), so a new page is tested without changing this file.
  * Theme: the color scheme is emulated and data-theme is set on <html> after load, so the scan sees the theme even
  * when a theme script has already chosen one. Reduced motion is on, so no color transition is caught halfway.
+ * Each scan waits for hydration and for the fonts, as the keyboard spec does: components add attributes after they
+ * measure themselves (a scrolling code block becomes focusable), and the final font metrics decide what scrolls.
  */
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
@@ -39,6 +41,12 @@ for (const [device, viewport] of Object.entries(VIEWPORTS)) {
         test(`${url} – ${theme}`, async ({ page }) => {
           await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' });
           await page.goto(url);
+          // Hydrated: React adds its fiber key to hydrated elements. Then the fonts, so the layout is final.
+          await page.waitForFunction(() => {
+            const header = document.querySelector('header');
+            return !!header && Object.keys(header).some((key) => key.startsWith('__reactFiber'));
+          });
+          await page.evaluate(() => document.fonts.ready.then(() => undefined));
           await page.evaluate((value) => {
             document.documentElement.dataset.theme = value;
           }, theme);
