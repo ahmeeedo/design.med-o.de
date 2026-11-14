@@ -1,11 +1,12 @@
 /**
- * How MDX elements render on docs pages: text styles from the medo-text-* classes, lists, links and code blocks
- * from @med-o/ui. Fenced code is highlighted here, in a server component at build time – no highlighting code
- * reaches the browser. Pages start at "##": the page title is the h1 of the hero.
+ * How MDX elements render on docs pages: every section is medo-prose, so headings, paragraphs and spacing come from
+ * the library; lists, links, inline code and code blocks are the components. Fenced code is highlighted here, in a
+ * server component at build time – no highlighting code reaches the browser. Pages start at "##": the page title is
+ * the h1 of the hero.
  */
 import { isValidElement, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import type { MDXComponents } from 'mdx/types';
-import { CodeBlock, Link, List, ListItem, Stack } from '@med-o/ui';
+import { Code, CodeBlock, Link, List, ListItem } from '@med-o/ui';
 import { highlight } from '@med-o/ui/highlight';
 
 type Language = Parameters<typeof highlight>[1];
@@ -39,14 +40,7 @@ function Anchor({ href = '', children }: ComponentPropsWithoutRef<'a'>) {
 }
 
 export const mdxComponents: MDXComponents = {
-  section: ({ children }) => (
-    <Stack as="section" gap="content">
-      {children}
-    </Stack>
-  ),
-  h2: (props) => <h2 className="medo-text-heading-lg" {...props} />,
-  h3: (props) => <h3 className="medo-text-heading-sm" {...props} />,
-  p: (props) => <p className="medo-text-body-md" {...props} />,
+  section: ({ children }) => <section className="medo-prose">{children}</section>,
   a: Anchor,
   ul: ({ children }) => (
     <List type="bullet" size="md">
@@ -59,5 +53,6 @@ export const mdxComponents: MDXComponents = {
     </List>
   ),
   li: ({ children }) => <ListItem>{children}</ListItem>,
+  code: Code,
   pre: Pre,
 };

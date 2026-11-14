@@ -1,3 +1,5 @@
+import type { Status } from './docs-content';
+
 /**
  * The links of the site shell in one place: page links, resources and the feedback target.
  * Header, mobile menu, docs sidebar and footer all read from here, so a link changes in one spot.
@@ -11,7 +13,8 @@ export interface SiteLink {
 /** One area of the docs tree, built from the content files (see docs-content.ts). */
 export interface DocsArea {
   label: string;
-  pages: SiteLink[];
+  /** Pages with their status when the front matter sets one; the sidebar shows a badge for pages that are not stable. */
+  pages: (SiteLink & { status?: Status })[];
 }
 
 /** Page links in the header and the mobile menu. Home has none: the logo leads there. */

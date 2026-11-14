@@ -1,22 +1,22 @@
 /**
- * Site search: the header's search button and Cmd/Ctrl + K open QuickSearch; results come from the Pagefind index
- * that `npm run build` writes to out/pagefind. Pagefind loads on the first open, never with the page, and the
+ * Site search: the QuickSearch dialog behind the header's triggers and Cmd/Ctrl + K; results come from the Pagefind
+ * index that `npm run build` writes to out/pagefind. Pagefind loads on the first open, never with the page, and the
  * bundler leaves its import alone – it is a file of the export, not a module of the app.
- * With an empty query the dialog lists the docs pages and the site pages, so it is never empty. Results show the
- * page title only: an Option description fails axe label-content-name-mismatch. `next dev` has no index: the dialog
- * says so and keeps the suggestions.
+ * With an empty query the dialog lists the docs pages and the site pages, so it is never empty. A result shows the
+ * page title and the Pagefind excerpt as its description. `next dev` has no index: the dialog says so and keeps the
+ * suggestions. Suggestions and results use different id prefixes: React Aria keeps an item's id for its lifetime.
  */
 'use client';
 
-import { useRef, useState, useSyncExternalStore, type Key } from 'react';
+import { useRef, useState, type Key } from 'react';
 import { useRouter } from 'next/navigation';
-import { IconButton, ListBoxSection, Option, QuickSearch } from '@med-o/ui';
-import { Search } from 'lucide-react';
+import { ListBoxSection, Option, QuickSearch } from '@med-o/ui';
 import type { DocsArea } from './site-data';
 
 /** The part of the Pagefind browser API this file uses (pagefind.app/docs/api). */
 interface PagefindResult {
   url: string;
+  excerpt: string;
   meta: { title?: string; area?: string };
 }
 interface Pagefind {
@@ -33,6 +33,7 @@ type Status = 'idle' | 'loading' | 'ready' | 'unavailable';
 interface Hit {
   url: string;
   title: string;
+  excerpt: string;
   area: string;
 }
 
@@ -48,19 +49,24 @@ const SITE_PAGES = [
 /** Pagefind returns the file path ("/showcase.html"); the site links without the extension. */
 const toHref = (url: string) => url.replace(/\.html$/, '') || '/';
 
-const noop = () => () => {};
-/** The shortcut as aria-keyshortcuts: ⌘ K on Apple devices, Ctrl K elsewhere. The static HTML says Ctrl. */
-const useShortcut = () =>
-  useSyncExternalStore(
-    noop,
-    () => (/Mac|iPhone|iPad/.test(navigator.userAgent) ? 'Meta+K' : 'Control+K'),
-    () => 'Control+K',
-  );
+const ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" };
+/** The excerpt as plain text: Pagefind wraps matches in <mark> and escapes the rest. */
+const toText = (html: string) => html.replace(/<[^>]+>/g, '').replace(/&(amp|lt|gt|quot|#39);/g, (_, e: string) => ENTITIES[e]);
 
-export function SiteSearch({ docsTree }: { docsTree: DocsArea[] }) {
+/** Option ids: the href behind a prefix, so a page is one item in the suggestions and another in the results. */
+const toKey = (prefix: 'page' | 'result', href: string) => `${prefix}:${href}`;
+const fromKey = (key: Key) => String(key).replace(/^(page|result):/, '');
+
+export function SiteSearch({
+  isOpen,
+  onOpenChange,
+  docsTree,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  docsTree: DocsArea[];
+}) {
   const router = useRouter();
-  const shortcut = useShortcut();
-  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [hits, setHits] = useState<Hit[]>([]);
   const [pending, setPending] = useState(false);
@@ -87,9 +93,9 @@ export function SiteSearch({ docsTree }: { docsTree: DocsArea[] }) {
     return pagefind.current;
   };
 
-  // Every open starts empty with the suggestions; Esc in a filled field clears it first, then closes.
-  const onOpenChange = (value: boolean) => {
-    setOpen(value);
+  // Every open starts empty with the suggestions. The dialog closes on Esc at once; the × in the field clears it.
+  const open = (value: boolean) => {
+    onOpenChange(value);
     if (value) void load();
     else {
       latest.current = '';
@@ -117,19 +123,19 @@ export function SiteSearch({ docsTree }: { docsTree: DocsArea[] }) {
     const data = await Promise.all(search.results.slice(0, MAX_RESULTS).map((r) => r.data()));
     if (latest.current !== term) return;
     setHits(
-      data.map((d) => {
-        const title = d.meta.title ?? toHref(d.url);
-        return { url: toHref(d.url), title, area: d.meta.area ?? 'Pages' };
-      }),
+      data.map((d) => ({
+        url: toHref(d.url),
+        title: d.meta.title ?? toHref(d.url),
+        excerpt: toText(d.excerpt),
+        area: d.meta.area ?? 'Pages',
+      })),
     );
     setPending(false);
   };
 
-  const message = (term: string) => {
-    if (status === 'unavailable') return 'Search works in the built site. Run npm run build and open the exported site.';
-    if (status !== 'ready' || pending) return 'Loading results…';
-    return `No results for “${term}”`;
-  };
+  const term = query.trim();
+  const noResults = (value: string) =>
+    status === 'unavailable' ? 'Search works in the built site. Run npm run build and open the exported site.' : `No results for “${value}”`;
 
   // Results grouped by area, in the order Pagefind ranks their best hit.
   const groups = hits.reduce<{ area: string; hits: Hit[] }[]>((list, hit) => {
@@ -140,55 +146,46 @@ export function SiteSearch({ docsTree }: { docsTree: DocsArea[] }) {
   }, []);
 
   return (
-    <>
-      <IconButton
-        variant="ghost"
-        size="md"
-        icon={<Search />}
-        aria-label="Search"
-        shortcut={shortcut}
-        onPress={() => onOpenChange(true)}
-      />
-      <QuickSearch
-        isOpen={open}
-        onOpenChange={onOpenChange}
-        inputValue={query}
-        onInputChange={onInputChange}
-        clientFilter={false}
-        onAction={(key: Key) => router.push(String(key))}
-        aria-label="Search the docs"
-        placeholder="Search the docs"
-        noResultsLabel={message}
-      >
-        {query.trim()
-          ? groups.map((group) => (
-              <ListBoxSection key={`results-${group.area}`} id={`results-${group.area}`} title={group.area}>
-                {group.hits.map((hit) => (
-                  <Option key={hit.url} id={hit.url}>
-                    {hit.title}
-                  </Option>
-                ))}
-              </ListBoxSection>
-            ))
-          : [
-              ...docsTree.map((area) => (
-                <ListBoxSection key={`docs-${area.label}`} id={`docs-${area.label}`} title={area.label}>
-                  {area.pages.map((page) => (
-                    <Option key={page.href} id={page.href}>
-                      {page.label}
-                    </Option>
-                  ))}
-                </ListBoxSection>
-              )),
-              <ListBoxSection key="pages" id="pages" title="Pages">
-                {SITE_PAGES.map((page) => (
-                  <Option key={page.href} id={page.href}>
+    <QuickSearch
+      isOpen={isOpen}
+      onOpenChange={open}
+      inputValue={query}
+      onInputChange={onInputChange}
+      clientFilter={false}
+      isLoading={Boolean(term) && status !== 'unavailable' && (pending || status !== 'ready')}
+      onAction={(key: Key) => router.push(fromKey(key))}
+      aria-label="Search the docs"
+      placeholder="Search the docs"
+      noResultsLabel={noResults}
+    >
+      {term
+        ? groups.map((group) => (
+            <ListBoxSection key={`results-${group.area}`} id={`results-${group.area}`} title={group.area}>
+              {group.hits.map((hit) => (
+                <Option key={toKey('result', hit.url)} id={toKey('result', hit.url)} textValue={hit.title} description={hit.excerpt}>
+                  {hit.title}
+                </Option>
+              ))}
+            </ListBoxSection>
+          ))
+        : [
+            ...docsTree.map((area) => (
+              <ListBoxSection key={`docs-${area.label}`} id={`docs-${area.label}`} title={area.label}>
+                {area.pages.map((page) => (
+                  <Option key={toKey('page', page.href)} id={toKey('page', page.href)}>
                     {page.label}
                   </Option>
                 ))}
-              </ListBoxSection>,
-            ]}
-      </QuickSearch>
-    </>
+              </ListBoxSection>
+            )),
+            <ListBoxSection key="pages" id="pages" title="Pages">
+              {SITE_PAGES.map((page) => (
+                <Option key={toKey('page', page.href)} id={toKey('page', page.href)}>
+                  {page.label}
+                </Option>
+              ))}
+            </ListBoxSection>,
+          ]}
+    </QuickSearch>
   );
 }

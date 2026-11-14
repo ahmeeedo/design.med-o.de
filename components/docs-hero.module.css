@@ -9,11 +9,6 @@
   background: var(--medo-color-surface-canvas);
 }
 
-.category,
-.excerpt {
-  color: var(--medo-color-text-secondary);
-}
-
 @media (max-width: 639.98px) {
   .hero {
     padding: var(--medo-space-6);
