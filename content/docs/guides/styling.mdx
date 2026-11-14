@@ -1,0 +1,118 @@
+---
+title: Styling
+excerpt: Style your own UI with the tokens – in plain CSS or with Tailwind.
+type: guide
+area: guides
+order: 3
+related:
+  - /docs/overview/introduction
+---
+
+## Goal
+
+Your own screens look like the components: same colors, spacing and type. Plain CSS and Tailwind read the same `--medo-*` variables, so Light, Dark and your brand apply without extra work.
+
+The tokens package holds 423 tokens, 22 text style classes and 18 text color classes. Use plain CSS when your app has its own stylesheets, and the Tailwind theme when your app already runs on Tailwind CSS v4.
+
+## Steps
+
+### Install the packages
+
+<CodeTabs label="Package manager">
+
+```bash title="npm"
+npm install @med-o/ui @med-o/design-tokens
+```
+
+```bash title="pnpm"
+pnpm add @med-o/ui @med-o/design-tokens
+```
+
+```bash title="yarn"
+yarn add @med-o/ui @med-o/design-tokens
+```
+
+</CodeTabs>
+
+### Import the styles
+
+Import them once, at the root of the app, before your own styles.
+
+```css title="main.css" lineNumbers
+/* main.css */
+@import "@med-o/design-tokens/css/tokens.css";
+@import "@med-o/ui/styles.css";  /* with the React components */
+```
+
+Without Tailwind, add `@med-o/design-tokens/css/typography.css` for the `medo-text-*` classes and `@med-o/design-tokens/css/base.css` for the page background, text color and font on `body`.
+
+### Use the tokens – plain CSS
+
+Every token is a CSS variable, and every text style is a class such as `medo-text-body-md`.
+
+```css title="styles/card.css" lineNumbers
+.card {
+  background: var(--medo-color-surface-raised);
+  padding: var(--medo-space-6);
+}
+```
+
+### Use the tokens – Tailwind
+
+The theme needs Tailwind CSS v4, because it uses `@theme`. It replaces Tailwind’s defaults with the tokens.
+
+```css title="main.css" lineNumbers
+@import "tailwindcss";
+@import "@med-o/design-tokens/css/tokens.css";
+@import "@med-o/design-tokens/tailwind/theme.css";
+```
+
+```html title="index.html" lineNumbers
+<!-- One class, both themes -->
+<div class="bg-surface-raised text-text-primary p-6 rounded-lg">…</div>
+
+<!-- Not needed -->
+<div class="bg-white dark:bg-slate-900">…</div>
+```
+
+## Examples
+
+### What exists in Tailwind
+
+Each area has one class pattern, and the names are the token names.
+
+| Area | Classes |
+| --- | --- |
+| Colors | `bg-surface-*`, `text-text-*`, `border-border-*`, `bg-action-*` |
+| Text styles | `text-display-xl` … `text-body-md`, `text-label-sm`, `text-code-sm` |
+| Spacing rules | `gap-inline`, `gap-content`, `space-y-fields`, `gap-items`, `gap-group`, `py-section` |
+| Radius | `rounded-sm`, `rounded-md`, `rounded-lg`, `rounded-xl`, `rounded-full` |
+| Shadows | `shadow-elevation-1` … `shadow-elevation-4`, `shadow-focus-ring` |
+
+### Instead of Tailwind’s defaults
+
+The theme removes Tailwind’s own colors, text sizes, shadows, radii and widths. A removed class creates no CSS and no warning, so check this table when a style does not show.
+
+| Instead of | Use |
+| --- | --- |
+| `bg-white` | `bg-surface-default` |
+| `text-gray-600` | `text-text-secondary` |
+| `bg-blue-600` | `bg-action-primary text-text-on-action` |
+| `text-sm font-medium` | `text-label-md` |
+| `shadow-lg` | `shadow-elevation-2` |
+
+## Pitfalls
+
+- Class names built from variables, such as `bg-feedback-${tone}-surface`: Tailwind does not find them and creates no CSS. Use a map with the complete names.
+- Raw values such as `p-[13px]` or `bg-[#0b5cad]`: they skip the tokens, so Dark and your brand miss them. A token variable is fine: `max-w-(--medo-size-width-xl)`.
+- `dark:` for colors: the tokens switch already, so the extra class only adds a second place to change.
+- Restyling the inner parts of a component: they can change in a minor release. Use utilities for the layout around it and change a token for its look.
+
+## Related
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <Card title="Theming" subtitle="Your brand on top of the tokens." href="https://storybook.med-o.de/?path=/docs/guides-theming--docs" density="compact" />
+  <Card title="Colors" subtitle="The semantic color tokens." href="https://storybook.med-o.de/?path=/docs/foundations-colors--docs" density="compact" />
+  <Card title="Spacing & sizes" subtitle="The spacing rules and the scale." href="https://storybook.med-o.de/?path=/docs/foundations-spacing-sizes--docs" density="compact" />
+  <Card title="Typography" subtitle="Text styles and their classes." href="https://storybook.med-o.de/?path=/docs/foundations-typography--docs" density="compact" />
+</Grid>
