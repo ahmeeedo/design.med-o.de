@@ -19,14 +19,14 @@ import { mdxComponents } from './mdx-components';
 import { getUpdated } from './page-dates';
 import { rehypeSections } from './rehype-sections';
 import { storybookDocsUrl } from './site-data';
+import { pageMetadata } from './site-metadata';
 
 /** "Introduction" for a flat page, "Button · Styling" for a tab, the first one included. */
 export const docTitle = (doc: DocPage) => (doc.tab ? `${doc.title} · ${doc.tab.label}` : doc.title);
 
-export const docMetadata = (doc: DocPage): Metadata => ({
-  title: `${docTitle(doc)} · med.o Design System`,
-  description: doc.excerpt,
-});
+/** Title (the layout's template adds the site name), description, canonical URL and share tags of one entry. */
+export const docMetadata = (doc: DocPage): Metadata =>
+  pageMetadata({ title: docTitle(doc), description: doc.excerpt, path: doc.href });
 
 /** The hero's one external link: Storybook for components, Figma for foundations, patterns and guides that have it. */
 function heroLink(doc: DocPage): DocsHeroProps['link'] {

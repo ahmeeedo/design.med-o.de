@@ -1,5 +1,10 @@
 # CI – one job per question, so a red check says what is wrong:
-#   lint     ESLint without warnings and the TypeScript check. Red = a code or type error.
+#   lint     ESLint without warnings, the TypeScript check and the content schema unit check. Red = a code or type
+#            error, or a content rule that no longer holds (scripts/check-content.mjs).
+#   samples  the ts and tsx code blocks in content/ type-check against the installed packages. Red = a sample does not
+#            compile: the log names the MDX file and line (scripts/check-samples.mjs).
+#   spelling cspell on the content, docs/ and README.md in US English. Red = an unknown word: fix it, or add a real
+#            project word to cspell-words.txt.
 #   build    the static export builds (out/) and is passed on to the checks below. Red = a page does not build.
 #            Checks out the full history: the page dates come from git (scripts/page-dates.mjs).
 #   a11y     axe on every page in Light and Dark at 1440 and 390 px (WCAG 2.2 AA). Red = an accessibility violation:
@@ -9,6 +14,8 @@
 #   budget   the JavaScript every page loads (gzip), as a table in the summary. Red = a page is over the limit in
 #            scripts/js-budget.mjs (BUDGET_KB) or a script is missing.
 #   links    every internal link and asset in the export reaches a file. Red = a broken link: the log lists page → target.
+#   sitemap  sitemap.xml lists every page of the export and nothing else, and robots.txt names it. Red = the log lists
+#            the missing and extra URLs (scripts/check-sitemap.mjs).
 # “Deploy” starts only when all of them passed for a push to main. The job names are the required checks of main.
 name: CI
 
@@ -39,6 +46,35 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run check:content
+
+  samples:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check:samples
+
+  spelling:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check:spelling
 
   build:
     runs-on: ubuntu-24.04
@@ -121,7 +157,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-  # budget and links only read files with Node's own modules: no npm ci needed.
+  # budget, links and sitemap only read files with Node's own modules: no npm ci needed.
   budget:
     needs: build
     runs-on: ubuntu-24.04
@@ -155,3 +191,20 @@ jobs:
           name: site
           path: out
       - run: npm run check:links
+
+  sitemap:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      - run: npm run check:sitemap

@@ -1,0 +1,11 @@
+# Project words for cspell (cspell.json): names and terms of the med.o Design System and its tools.
+# One word per line, sorted. Add a word only when it is spelled right; never to silence a typo.
+cookieless
+Coolify
+llms
+medo
+Pagefind
+prerendered
+Shiki
+Storybook
+WCAG
