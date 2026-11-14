@@ -14,14 +14,14 @@ import type { DocPage } from './docs-content';
 import { DocsHero } from './docs-hero';
 import { mdxComponents } from './mdx-components';
 import { rehypeSections } from './rehype-sections';
+import { pageMetadata } from './site-metadata';
 
 /** "Introduction" for a flat page, "Button · Styling" for a tab, the first one included. */
 export const docTitle = (doc: DocPage) => (doc.tab ? `${doc.title} · ${doc.tab.label}` : doc.title);
 
-export const docMetadata = (doc: DocPage): Metadata => ({
-  title: `${docTitle(doc)} · med.o Design System`,
-  description: doc.excerpt,
-});
+/** Title (the layout's template adds the site name), description, canonical URL and share tags of one entry. */
+export const docMetadata = (doc: DocPage): Metadata =>
+  pageMetadata({ title: docTitle(doc), description: doc.excerpt, path: doc.href });
 
 export async function DocsPage({ doc }: { doc: DocPage }) {
   const headings: string[] = [];

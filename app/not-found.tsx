@@ -4,7 +4,7 @@ import { Container, Link, Stack } from '@med-o/ui';
 import { PageMain } from '../components/page-main';
 import text from '../components/text.module.css';
 
-export const metadata: Metadata = { title: 'Page not found · med.o Design System' };
+export const metadata: Metadata = { title: 'Page not found' };
 
 export default function NotFound() {
   return (
