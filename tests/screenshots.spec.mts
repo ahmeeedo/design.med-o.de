@@ -12,7 +12,7 @@
  *      (Missing references need no extra run: step 1 already wrote them.)
  *   3. Open the run → Summary → Artifacts → "screenshots", unzip it into tests/screenshots/, check the images and
  *      commit them. The next run compares against them.
- * The Button tabs and the real Home, Showcase and Updates pages get their references this way when they land.
+ * New templates get their references the same way when they land.
  *
  * Stable shots: reduced motion and no animations; the page has hydrated, the fonts are loaded and no Skeleton is
  * left (images and lazily loaded examples are done). The "Updated" date is masked: it follows the last commit of the
@@ -32,6 +32,10 @@ const PAGES = [
   { path: '/docs/foundations/colors/guidelines', full: true },
   { path: '/docs/foundations/colors/tokens', full: true },
   { path: '/docs/foundations/colors/code', full: true },
+  { path: '/docs/components/button', full: true },
+  { path: '/docs/components/button/styling', full: true },
+  { path: '/docs/components/button/code', full: true },
+  { path: '/docs/components/button/accessibility', full: true },
   // First screen only: the release list comes from the installed packages and changes with every release.
   { path: '/docs/overview/changelog', full: false },
   { path: '/', full: false },
