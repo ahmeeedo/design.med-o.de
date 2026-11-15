@@ -6,12 +6,17 @@
  * when a theme script has already chosen one. Reduced motion is on, so no color transition is caught halfway.
  * Each scan waits for hydration and for the fonts, as the keyboard spec does: components add attributes after they
  * measure themselves (a scrolling code block becomes focusable), and the final font metrics decide what scrolls.
+ * One exception: color-contrast skips [data-contrast-example], the don't samples on foundation pages that show a
+ * failing color pair on purpose. They are pictures of a wrong example (WCAG 1.4.3, incidental text), named for screen
+ * readers. The page is scanned without them, then they are scanned on their own with every rule but color-contrast.
  */
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { listPages, pageUrl } from '../scripts/out-files.mjs';
 
 const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+/** Don't samples that fail contrast on purpose; see the header. */
+const CONTRAST_EXAMPLE = '[data-contrast-example]';
 const THEMES = ['light', 'dark'] as const;
 const VIEWPORTS = {
   desktop: { width: 1440, height: 900 },
@@ -51,7 +56,15 @@ for (const [device, viewport] of Object.entries(VIEWPORTS)) {
             document.documentElement.dataset.theme = value;
           }, theme);
 
-          const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).analyze();
+          const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).exclude(CONTRAST_EXAMPLE).analyze();
+          if ((await page.locator(CONTRAST_EXAMPLE).count()) > 0) {
+            const examples = await new AxeBuilder({ page })
+              .withTags(WCAG_22_AA)
+              .include(CONTRAST_EXAMPLE)
+              .disableRules(['color-contrast'])
+              .analyze();
+            violations.push(...examples.violations);
+          }
           // Only the rule ids are compared: the message above them is the readable part.
           expect(violations.map((v) => v.id), `${url} (${file}) at ${viewport.width}px in ${theme}:\n\n${explain(violations)}`).toEqual([]);
         });

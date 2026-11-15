@@ -1,0 +1,41 @@
+---
+tab: code
+excerpt: The color tokens as CSS variables, Tailwind classes and JavaScript values.
+---
+
+## CSS
+
+Every token is a CSS variable: `--medo-color-` plus the token name with dashes. It switches with the theme.
+
+```css title="styles/notice.css" lineNumbers
+.notice {
+  background: var(--medo-color-surface-brand-subtle);
+  color: var(--medo-color-text-primary);
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-brand);
+}
+```
+
+## Tailwind
+
+The theme maps the semantic tokens to classes. There are no palette classes.
+
+| Tokens | Classes |
+| --- | --- |
+| Surfaces | `bg-surface-*` |
+| Text | `text-text-*` |
+| Borders | `border-border-*` |
+| Actions | `bg-action-*` |
+| Feedback | `bg-feedback-*`, `text-feedback-*` |
+| States | `bg-state-hover`, `bg-state-pressed` |
+
+## JavaScript
+
+For canvas, charts and email – places without CSS variables. Values are resolved: Light in `tokens`, Dark in `darkColors`.
+
+```ts title="chart.ts" lineNumbers
+import { tokens, darkColors } from '@med-o/design-tokens/js';
+
+// For canvas and charts. In CSS, use the variables.
+const line = tokens['color-action-primary'];
+const lineDark = darkColors['color-action-primary'];
+```
