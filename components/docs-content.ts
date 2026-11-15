@@ -42,9 +42,15 @@ const common = {
   related: z.array(z.string().min(1)).optional(),
 };
 
+/** The hero's external link on an overview page, e.g. "Releases on GitHub" on the Changelog. */
+const HeroLink = z.strictObject({ label: z.string().min(1), href: z.url() });
+
+/** Own texts for the Feedback box of an overview page; without them the box asks about the page in general. */
+const FeedbackText = z.strictObject({ title: z.string().min(1), text: z.string().min(1) });
+
 // One strict object per type: a field that another type owns, such as `status` on a guide, is an unrecognized key.
 const PageFrontMatter = z.discriminatedUnion('type', [
-  z.strictObject({ ...common, type: z.literal('overview') }),
+  z.strictObject({ ...common, type: z.literal('overview'), link: HeroLink.optional(), feedback: FeedbackText.optional() }),
   z.strictObject({ ...common, type: z.literal('guide'), figma: z.url().optional() }),
   z.strictObject({ ...common, type: z.literal('pattern'), figma: z.url().optional() }),
   z.strictObject({ ...common, type: z.literal('foundation'), figma: z.url() }),
@@ -79,6 +85,10 @@ export interface DocPage {
   storybookId?: string;
   figma?: string;
   component?: string;
+  /** Overview pages: the hero's external link. */
+  link?: { label: string; href: string };
+  /** Overview pages: own texts for the Feedback box. */
+  feedback?: { title: string; text: string };
   /** The page's part of the URL: the file name or the folder name. */
   slug: string;
   /** This entry's URL. The first tab of a folder page is the page URL itself. */

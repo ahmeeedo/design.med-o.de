@@ -1,0 +1,106 @@
+/*
+ * Site/Release (Figma 145:5698, 145:6280): a framed box (border/default, radius/lg) with a header row and one row per
+ * group, a line between them. Rows: 16/24 padding; the type column is 96 px (space/24); the changes take the rest,
+ * their badges sit on the right. Below 640 px the type sits above its changes and the badges below each summary –
+ * no Mobile screen exists, so this keeps the order and the parts of the desktop layout.
+ */
+.release {
+  overflow: hidden;
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-lg);
+  background: var(--medo-color-surface-default);
+}
+
+.header,
+.group,
+.footer {
+  display: flex;
+  padding: var(--medo-space-4) var(--medo-space-6);
+}
+
+.header {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--medo-layout-gap-inline);
+}
+
+.packages {
+  flex: 1;
+  text-align: end;
+}
+
+.group {
+  gap: var(--medo-layout-gap-items);
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+}
+
+.type {
+  flex: none;
+  inline-size: var(--medo-space-24);
+}
+
+.changes {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--medo-layout-gap-content);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.change {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--medo-layout-gap-content);
+}
+
+.change[hidden] {
+  display: none;
+}
+
+.summary {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.meta {
+  display: flex;
+  flex: none;
+  gap: var(--medo-space-1);
+}
+
+.match {
+  font-weight: var(--medo-font-weight-bold);
+  color: var(--medo-color-text-brand);
+}
+
+.footer {
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+}
+
+.flipped {
+  rotate: 180deg;
+}
+
+@media (max-width: 639.98px) {
+  .header,
+  .group,
+  .footer {
+    padding-inline: var(--medo-space-4);
+  }
+
+  .group,
+  .change {
+    flex-direction: column;
+  }
+
+  .group {
+    gap: var(--medo-layout-gap-content);
+  }
+
+  .change {
+    gap: var(--medo-layout-gap-inline);
+  }
+}

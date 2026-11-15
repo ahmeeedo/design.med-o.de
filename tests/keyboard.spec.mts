@@ -128,6 +128,35 @@ test.describe('desktop', () => {
   });
 });
 
+test.describe('changelog', () => {
+  test.use({ viewport: DESKTOP });
+
+  // Filters by keyboard alone, and the filter survives a reload because it lives in the URL.
+  test('search and type filter work by keyboard and survive a reload', async ({ page }) => {
+    await open(page, '/docs/overview/changelog');
+    const search = page.getByRole('searchbox', { name: 'Search changes' });
+    await search.focus();
+    await page.keyboard.type('dialog');
+    await expect(page).toHaveURL(/[?&]q=dialog/);
+    const type = page.getByRole('grid', { name: 'Type' });
+    await type.getByRole('row', { name: 'All' }).focus();
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('Space');
+    await expect(page).toHaveURL(/[?&]type=fixed/);
+    const count = page.getByRole('main').getByRole('status').filter({ hasText: /change/ });
+    const filtered = await count.textContent();
+    // Opening the same URL again is the reload: the filter comes back from the query.
+    const url = new URL(page.url());
+    await open(page, url.pathname + url.search);
+    await expect(search).toHaveValue('dialog');
+    await expect(type.getByRole('row', { name: 'Fixed' })).toHaveAttribute('aria-selected', 'true');
+    await expect(count).toHaveText(filtered ?? '');
+  });
+});
+
 test.describe('phone', () => {
   test.use({ viewport: PHONE });
 

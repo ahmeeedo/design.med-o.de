@@ -3,6 +3,8 @@
  * an id from its text (so /docs/components/button/styling#color reaches the Color section) and collects the heading
  * texts for the content schema check and, with their ids, for "On this page". Sections take the spacing rule `group` between them and `content` inside
  * (Figma 106:3625). Content before the first heading becomes its own section.
+ * A data block (a component named in `blocks`, such as the Changelog's release list) stays outside the sections: it
+ * brings its own headings, which the page adds to its outline.
  */
 import type { Element, ElementContent, Root, RootContent } from 'hast';
 
@@ -11,6 +13,10 @@ export interface SectionsOptions {
   headings?: string[];
   /** Receives the id and the text of every "##" heading in document order. */
   outline?: { id: string; label: string }[];
+  /** Names of MDX components that are data blocks: kept outside the sections. */
+  blocks?: readonly string[];
+  /** Receives the name of every data block the page uses, in document order. */
+  usedBlocks?: string[];
 }
 
 const isHeading2 = (node: RootContent): node is Element => node.type === 'element' && node.tagName === 'h2';
@@ -27,7 +33,11 @@ const slugOf = (text: string) =>
     .replace(/[^\p{L}\p{N}]+/gu, '-')
     .replace(/^-|-$/g, '');
 
-export function rehypeSections({ headings, outline }: SectionsOptions = {}) {
+/** The component name of an MDX JSX block (<ReleaseList />), or undefined for any other node. */
+const blockName = (node: RootContent) =>
+  (node as { type: string }).type === 'mdxJsxFlowElement' ? ((node as { name?: string | null }).name ?? undefined) : undefined;
+
+export function rehypeSections({ headings, outline, blocks = [], usedBlocks }: SectionsOptions = {}) {
   return (tree: Root) => {
     const kept: RootContent[] = [];
     const sections: Element[] = [];
@@ -40,6 +50,14 @@ export function rehypeSections({ headings, outline }: SectionsOptions = {}) {
       const blank = node.type === 'text' && node.value.trim() === '';
       if (esm || (blank && !current)) {
         kept.push(node);
+        continue;
+      }
+      // A data block ends the current section and stands on its own, in document order.
+      const name = blockName(node);
+      if (name && blocks.includes(name)) {
+        usedBlocks?.push(name);
+        sections.push(node as Element);
+        current = undefined;
         continue;
       }
       if (!current || isHeading2(node)) {

@@ -13,8 +13,11 @@ import { DocsPage, docMetadata } from '../../../../../components/docs-page';
 
 export const dynamicParams = false;
 
+/** Pages with a route of their own, e.g. app/docs/overview/changelog: this route does not generate them. */
+const OWN_ROUTES = new Set(['/docs/overview/changelog']);
+
 export async function generateStaticParams() {
-  return (await getDocs()).map((p) => ({
+  return (await getDocs()).filter((p) => !OWN_ROUTES.has(p.pageHref)).map((p) => ({
     area: p.area,
     page: p.slug,
     tab: p.href === p.pageHref ? undefined : [p.tab!.slug],
