@@ -6,10 +6,11 @@
  *
  * MDX maps, one file each in components/mdx/. A route passes one map to DocsPage, and Next ships the client code of
  * every component in that map on every page of the route – so each map holds only what its pages use:
- *   base.tsx         baseComponents: plain Markdown. Overview pages and the legal pages.
+ *   prose.tsx        proseComponents: running text only, no code blocks. The legal pages.
+ *   base.tsx         baseComponents: prose plus code blocks. Overview pages.
  *   content.tsx      contentComponents: base plus code tabs, tables, cards and grids. Guides.
  *   <area>.tsx       <area>Components: content plus the blocks of one area, added with the area's first page –
- *                    patterns.tsx (examples, related components), foundations.tsx (token tables),
+ *                    patterns.tsx (spec images, related components, lists and badges), foundations.tsx (token tables),
  *                    components.tsx (Playground and the component blocks). Spread the map it builds on, then add.
  *
  * Authoring, for copying into new pages:
@@ -21,8 +22,9 @@
  */
 import { isValidElement, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import type { MDXComponents } from 'mdx/types';
-import { Code, CodeBlock, Link, List, ListItem } from '@med-o/ui';
+import { CodeBlock } from '@med-o/ui';
 import { highlight } from '@med-o/ui/highlight';
+import { proseComponents } from './prose';
 
 export type Language = Parameters<typeof highlight>[1];
 
@@ -68,29 +70,7 @@ async function Pre({ children }: ComponentPropsWithoutRef<'pre'>) {
   );
 }
 
-function Anchor({ href = '', children }: ComponentPropsWithoutRef<'a'>) {
-  const external = /^https?:\/\//.test(href);
-  return (
-    <Link href={href} external={external} target={external ? '_blank' : undefined}>
-      {children}
-    </Link>
-  );
-}
-
 export const baseComponents: MDXComponents = {
-  section: ({ children }) => <section className="medo-prose">{children}</section>,
-  a: Anchor,
-  ul: ({ children }) => (
-    <List type="bullet" size="md">
-      {children}
-    </List>
-  ),
-  ol: ({ children }) => (
-    <List type="number" size="md">
-      {children}
-    </List>
-  ),
-  li: ({ children }) => <ListItem>{children}</ListItem>,
-  code: Code,
+  ...proseComponents,
   pre: Pre,
 };
