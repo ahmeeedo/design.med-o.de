@@ -1,8 +1,8 @@
 /**
  * Site/Release (Figma 145:5698): one framed box per version – the version, its date and the packages it changed,
  * then the groups New · Improved · Fixed with each change's summary and, on the right, "Breaking" and the package.
- * A composition of library parts, not a design system component. The Changelog and Updates both render it; its props
- * are data only. A long version shows 3 changes per group and "Show all N changes"; the rest is in the HTML but
+ * A composition of library parts, not a design system component; its props are data only. Updates lays releases out
+ * differently (69:1061) and shares the groups and the summary text from here. A long version shows 3 changes per group and "Show all N changes"; the rest is in the HTML but
  * hidden, so it is indexed for search. With `query`, the matching words are bold in the brand color (145:6568).
  * Client component: the button toggles the hidden changes.
  */
@@ -14,7 +14,7 @@ import { ChevronDown } from 'lucide-react';
 import type { Category, PackageName, Version, VersionEntry } from './changelog';
 import styles from './release.module.css';
 
-const GROUPS: { category: Category; label: string; tone: BadgeTone }[] = [
+export const GROUPS: { category: Category; label: string; tone: BadgeTone }[] = [
   { category: 'new', label: 'New', tone: 'brand' },
   { category: 'improved', label: 'Improved', tone: 'info' },
   { category: 'fixed', label: 'Fixed', tone: 'neutral' },
@@ -26,7 +26,7 @@ const PACKAGE_ORDER: PackageName[] = ['@med-o/ui', '@med-o/design-tokens'];
 const DATE = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'UTC' });
 
 /** A summary as the designs show it: plain text. Changesets mark code with backticks, the only inline Markdown used. */
-const plainSummary = (summary: string) => summary.replace(/`([^`]*)`/g, '$1');
+export const plainSummary = (summary: string) => summary.replace(/`([^`]*)`/g, '$1');
 
 /** Changes shown per group before "Show all N changes", as in Figma (0.7.0). */
 export const RELEASE_PREVIEW = 3;
