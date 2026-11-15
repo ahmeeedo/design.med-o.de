@@ -105,8 +105,13 @@ test.describe('desktop', () => {
     await page.keyboard.press('Enter');
     await expect(searchDialog(page)).toBeVisible();
     await page.keyboard.type('install');
-    await expect(searchDialog(page).getByRole('option', { name: 'Introduction' })).toBeVisible();
-    await page.keyboard.press('ArrowDown');
+    const introduction = searchDialog(page).getByRole('option', { name: 'Introduction' });
+    await expect(introduction).toBeVisible();
+    // The first result is highlighted at once; arrow keys move to the Introduction wherever the ranking puts it.
+    for (let step = 0; step < 5 && !(await introduction.getAttribute('data-focused')); step += 1) {
+      await page.keyboard.press('ArrowDown');
+    }
+    await expect(introduction).toHaveAttribute('data-focused');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL('/docs/overview/introduction');
   });

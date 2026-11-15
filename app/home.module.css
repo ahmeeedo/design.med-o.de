@@ -1,0 +1,52 @@
+/*
+ * Home hero (Figma 37:2288): one screen high below the header. From 1024 px a grid of the intro (480 px,
+ * size/width/3xl) and the examples, one `group` gap apart; the examples run past the right and bottom edge and are
+ * cropped there, as in the design. The intro starts 96 px below the header, the examples 40 px: the hero adds that to
+ * the top padding of <main> (space/8). The intro lines up with the page container (container/xl), as the header
+ * content does. Below 1024 px everything stacks and the hero takes its natural height; below 640 px the headline
+ * steps down to display/md, as in the mobile design (78:2827).
+ */
+/* Rows one `items` gap apart (intro, then the example switch), columns one `group` gap apart. */
+.hero {
+  display: grid;
+  gap: var(--medo-layout-gap-items) var(--medo-layout-gap-group);
+  padding-inline: var(--medo-layout-margin);
+}
+
+.title {
+  text-wrap: balance;
+}
+
+@media (max-width: 639.98px) {
+  .hero .title {
+    font: var(--medo-typography-display-md);
+  }
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--medo-layout-gap-content);
+}
+
+@media (max-width: 639.98px) {
+  .actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    grid-template-columns: var(--medo-size-width-3xl) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    block-size: calc(100dvh - var(--medo-space-16) - 2 * var(--medo-space-8));
+    overflow: hidden;
+    padding-inline: max(var(--medo-layout-margin), calc((100% - var(--medo-container-xl)) / 2)) 0;
+  }
+
+  .intro {
+    grid-column: 1;
+    padding-block-start: var(--medo-space-16);
+  }
+}

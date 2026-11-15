@@ -1,0 +1,40 @@
+/*
+ * Example wall (Figma 37:2319): columns of 320 px (size/width/xl) one `items` gap apart, the cards inside one `items`
+ * gap apart; the first column starts 32 px lower and the third 24 px lower than the second, as in the design. Below
+ * 1024 px the Carousel row replaces it.
+ */
+.wall {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--medo-layout-gap-items);
+}
+
+.column {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--medo-layout-gap-items);
+  inline-size: var(--medo-size-width-xl);
+}
+
+.column:nth-child(1) {
+  padding-block-start: var(--medo-space-8);
+}
+
+.column:nth-child(3) {
+  padding-block-start: var(--medo-space-6);
+}
+
+.row {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .wall {
+    display: none;
+  }
+
+  .row {
+    display: block;
+  }
+}
