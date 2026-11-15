@@ -1,0 +1,120 @@
+/*
+ * Color samples on foundation pages (Figma Foundation · Colors 132:4269, 132:4909, 134:4781): swatches, chip rows,
+ * sample panels, palette ramps and the layer flow. Every color is a token variable handed in through a custom
+ * property (--swatch, --surface, --text, --secondary), so the samples follow Light, Dark and a custom brand. The
+ * library has no swatch component; these are the closest documented case, built from tokens only.
+ */
+.swatch {
+  display: block;
+  inline-size: var(--medo-size-control-md);
+  block-size: var(--medo-size-control-md);
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-md);
+  background: var(--swatch);
+}
+
+.chips {
+  display: flex;
+}
+
+.chip {
+  inline-size: var(--medo-space-8);
+  block-size: var(--medo-space-8);
+  background: var(--swatch);
+}
+
+.chip:first-child {
+  border-start-start-radius: var(--medo-radius-md);
+  border-end-start-radius: var(--medo-radius-md);
+}
+
+.chip:last-child {
+  border-start-end-radius: var(--medo-radius-md);
+  border-end-end-radius: var(--medo-radius-md);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--medo-space-1);
+  padding: var(--medo-space-6);
+  border-radius: var(--medo-radius-lg);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.tile {
+  gap: var(--medo-space-3);
+}
+
+.example {
+  align-items: center;
+  padding: var(--medo-space-10);
+  text-align: center;
+}
+
+.secondary {
+  color: var(--secondary);
+}
+
+/* A list of steps, not running text: no bullets and no list indent. */
+.ramp {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--medo-size-control-lg), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--medo-space-1);
+  min-inline-size: 0;
+}
+
+.stepSwatch {
+  block-size: var(--medo-space-16);
+  background: var(--swatch);
+}
+
+.step:first-child .stepSwatch {
+  border-start-start-radius: var(--medo-radius-lg);
+  border-end-start-radius: var(--medo-radius-lg);
+}
+
+.step:last-child .stepSwatch {
+  border-start-end-radius: var(--medo-radius-lg);
+  border-end-end-radius: var(--medo-radius-lg);
+}
+
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--medo-layout-gap-content);
+}
+
+/*
+ * Below 640 px a ramp wraps into rows of wider steps, so the hex values fit on one line; the steps then stand apart
+ * with the inline gap and round corners each, as a strip would break at every row end. The three layers stack;
+ * the arrows would point sideways into nothing.
+ */
+@media (max-width: 639.98px) {
+  .ramp {
+    grid-template-columns: repeat(auto-fill, minmax(var(--medo-size-width-3xs), 1fr));
+    gap: var(--medo-layout-gap-inline);
+  }
+
+  .ramp .stepSwatch {
+    border-radius: var(--medo-radius-md);
+  }
+
+  .flow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .arrow {
+    display: none;
+  }
+}

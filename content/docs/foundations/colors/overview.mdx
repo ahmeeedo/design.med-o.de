@@ -1,0 +1,92 @@
+---
+title: Colors
+excerpt: Roles that components use. Each token switches between Light and Dark.
+type: foundation
+area: foundations
+order: 1
+figma: https://www.figma.com/design/vOTfMtcpCwAJjuSZUkfpfj/med.o-Design-System?node-id=3-7096
+related:
+  - /docs/guides/styling
+---
+
+## Introduction
+
+<Figure caption="A muted loop of med.o screens switching between Light and Dark – the same components, one set of tokens. Pause stays visible (WCAG 2.2.2).">
+  <Image src="/spec/colors/introduction.svg" alt="A sign-up form and a settings panel, split down the middle: the left half in Light, the right half in Dark." width={824} height={464} ratio="original" fit="contain" radius="lg" />
+</Figure>
+
+## Color in med.o
+
+Color is quiet and carries meaning. Most of a screen is neutral, the brand color marks what you can do, and status colors say what happened – in Light and Dark, and in your own brand.
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <ColorSample surface="surface/subtle" title="Neutral first" titleAs="h3" chips={['slate/50', 'slate/100', 'slate/200', 'slate/500', 'slate/900']} body="Surfaces and text use the neutral palette. Content leads, color supports it." />
+  <ColorSample surface="surface/subtle" title="Brand for action" titleAs="h3" chips={['brand/100', 'brand/400', 'brand/600', 'brand/800']} body="The primary color marks what you can do: buttons, links, selection, brand surfaces." />
+  <ColorSample surface="surface/subtle" title="Meaning, not decoration" titleAs="h3" chips={['green/600', 'amber/500', 'red/600', 'sky/600']} body="Success, warning, danger and info only show status – always with an icon and text." />
+  <ColorSample surface="surface/subtle" title="Your brand, every theme" titleAs="h3" chips={['brand/600', 'violet/600', 'pink/600', 'sky/700']} body="Change the primary tokens and every component follows, in Light and Dark. Text pairs stay at 4.5 : 1." />
+</Grid>
+
+## Color layers
+
+Colors come in three layers. Products use only the last one – the semantic tokens – so Light, Dark and your brand apply without changing a component.
+
+<ColorFlow>
+  <Card title="Primitives" subtitle="The raw palette." density="compact" headingLevel={3}>`slate-100` · `sky-600`</Card>
+  <Card title="Alias" subtitle="Names for the palette." density="compact" headingLevel={3}>`neutral-100` · `primary-600`</Card>
+  <Card title="Semantic" subtitle="What a color is for." density="compact" headingLevel={3} variant="brand">`surface-subtle` · `action-primary`</Card>
+</ColorFlow>
+
+## Palette
+
+The primitives behind every token. Products never use them directly – the alias names in brackets show where each ramp goes.
+
+<PaletteRamp group="brand" label="Brand" alias="primary" />
+<PaletteRamp group="slate" label="Slate" alias="neutral" />
+<PaletteRamp group="sky" label="Sky" alias="info" />
+<PaletteRamp group="green" label="Green" alias="success" />
+<PaletteRamp group="amber" label="Amber" alias="warning" />
+<PaletteRamp group="red" label="Red" alias="danger" />
+<PaletteRamp group="violet" label="Violet" alias="avatars, code" />
+<PaletteRamp group="pink" label="Pink" alias="avatars, code" />
+
+Plus white, black and their transparent steps (white-alpha, black-alpha, slate-alpha) for state layers, scrims and hairlines.
+
+## Layering model
+
+Surfaces stack from the page inwards: at most three levels. Floating layers use surface/raised with elevation, not a darker color.
+
+<Image src="/spec/colors/layering-model.svg" alt="The three surface levels in Light and in Dark: marker 1 on the page, 2 on a card, 3 on an inset area inside the card." width={824} height={268} ratio="original" fit="contain" radius="lg" />
+
+1. Page – surface/canvas.
+2. Container – surface/default: cards, panels, inputs.
+3. Inset – surface/subtle: table headers, code blocks, hover rows.
+
+## Implementing color
+
+| Term | Definition |
+| --- | --- |
+| Theme | Light or Dark. It follows the system setting; `data-theme` on the root element overrides it. |
+| Token | A named color with one value per theme, for example surface/default. |
+| Role | What the token is for: surface, text, border, action, state, feedback. |
+| Value | The palette color behind the token, per theme: white in Light, neutral-900 in Dark. |
+
+## Interaction states
+
+Filled controls have their own hover and pressed tokens. Transparent ones lay a state layer over their background.
+
+| State | Filled controls | Transparent controls |
+| --- | --- | --- |
+| Hover | `action/*-hover` | `state/hover` |
+| Pressed | `action/*-pressed` | `state/pressed` |
+| Selected | `action/selected + text/brand` | `action/selected + text/brand` |
+| Focus | `focus/ring on focus/halo` | `focus/ring on focus/halo` |
+| Disabled | `action/disabled + text/disabled` | `text/disabled` |
+
+## Accessibility
+
+<List type="check" size="md">
+  <ListItem>Every text pair under Guidelines › Text on backgrounds reaches 4.5 : 1 in Light and Dark. The token build checks them and fails below.</ListItem>
+  <ListItem>Control boundaries use border/strong: at least 3 : 1 on content surfaces.</ListItem>
+  <ListItem>The focus ring keeps 3 : 1 on any surface, because the halo sits between ring and element.</ListItem>
+  <ListItem>text/disabled is only for disabled elements. It is exempt from contrast and never used for readable content.</ListItem>
+</List>
