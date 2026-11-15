@@ -1,0 +1,29 @@
+/*
+ * Layout helpers the live examples share: a button that takes the card's width (Button documents className for
+ * width), a row with its parts at both ends, and plain lists without markers. Values only from tokens.
+ */
+.full {
+  inline-size: 100%;
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--medo-layout-gap-inline);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--medo-layout-gap-inline);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--medo-layout-gap-content);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

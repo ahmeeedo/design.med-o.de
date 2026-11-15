@@ -1,0 +1,5 @@
+/* Now playing (Figma 58:2702): the cover is a 64 px square (space/16) next to the title. */
+.cover {
+  flex: none;
+  inline-size: var(--medo-space-16);
+}

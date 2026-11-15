@@ -1,0 +1,60 @@
+/*
+ * Updates (Figma 69:1061): the intro starts one section gap below the header, as on Showcase. Each section after the
+ * releases has a line on top and one `group` gap above its heading. Tiles: surface/subtle, radius/lg, padding
+ * space/6, as the library's filled Card; the logo tiles compose the same look because Card has no slot for a logo
+ * above its title. Logos are 32 px high (space/8) and keep their own width. GitHub's logo is never recolored: Light
+ * shows the black file, Dark the white one, with the same dark rule as the tokens (see site-logo.module.css).
+ */
+.page {
+  padding-block-start: calc(var(--medo-layout-gap-section) - var(--medo-space-8));
+}
+
+.section {
+  padding-block-start: var(--medo-layout-gap-group);
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+}
+
+.grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fill {
+  block-size: 100%;
+}
+
+.tile {
+  padding: var(--medo-space-6);
+  border-radius: var(--medo-radius-lg);
+  background: var(--medo-color-surface-subtle);
+}
+
+.logo {
+  display: block;
+  align-self: flex-start;
+  inline-size: auto;
+  block-size: var(--medo-space-8);
+}
+
+.dark {
+  display: none;
+}
+
+:global([data-theme='dark']) .light {
+  display: none;
+}
+
+:global([data-theme='dark']) .dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .light {
+    display: none;
+  }
+
+  :global(:root:not([data-theme='light'])) .dark {
+    display: block;
+  }
+}
