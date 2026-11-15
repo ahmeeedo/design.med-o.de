@@ -3,7 +3,10 @@
  * violation. The widths are the ones of keyboard.spec.mts, so the header, the mobile menu and the stacked layouts are
  * all scanned. Pages come from out/ (scripts/out-files.mjs), so a new page is tested without changing this file.
  * Theme: the color scheme is emulated and data-theme is set on <html> after load, so the scan sees the theme even
- * when a theme script has already chosen one. Reduced motion is on, so no color transition is caught halfway.
+ * when a theme script has already chosen one. Reduced motion is on, and the scan waits until every finite animation
+ * and transition has ended: some components still fade in under reduced motion (Tag enters from opacity 0), and a
+ * scan in the middle of a fade measures blended colors. Endless animations, such as a skeleton shimmer, are not
+ * awaited.
  * Each scan waits for hydration and for the fonts, as the keyboard spec does: components add attributes after they
  * measure themselves (a scrolling code block becomes focusable), and the final font metrics decide what scrolls.
  * One exception: color-contrast skips [data-contrast-example], the don't samples on foundation pages that show a
@@ -55,6 +58,15 @@ for (const [device, viewport] of Object.entries(VIEWPORTS)) {
           await page.evaluate((value) => {
             document.documentElement.dataset.theme = value;
           }, theme);
+          // Let every finite fade and transition end, so the scan sees final colors (see the header).
+          await page.evaluate(() =>
+            Promise.all(
+              document
+                .getAnimations()
+                .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
+                .map((animation) => animation.finished.catch(() => undefined)),
+            ).then(() => undefined),
+          );
 
           const { violations } = await new AxeBuilder({ page }).withTags(WCAG_22_AA).exclude(CONTRAST_EXAMPLE).analyze();
           if ((await page.locator(CONTRAST_EXAMPLE).count()) > 0) {

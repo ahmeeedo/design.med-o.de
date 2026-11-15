@@ -1,0 +1,35 @@
+---
+tab: accessibility
+excerpt: What the Button does for accessibility, the keys it uses and how it is tested.
+---
+
+## What med.o provides
+
+<A11yNotes />
+
+## Keyboard
+
+<KeyboardTable />
+
+## Design recommendations
+
+- Write labels that work on their own: “Delete project”, not “OK” or “Click here”.
+- Don’t rely on color: a Danger button says what it destroys.
+- Prefer an enabled button with a message over a disabled one – or explain why it is disabled.
+- Use lg (48 px) in touch-first layouts.
+- An action shown only as an icon needs an Icon Button with a tooltip.
+- Keep the order of buttons the same as the reading order.
+
+## Development recommendations
+
+- Use `onPress` instead of `onClick` and `isDisabled` instead of `disabled`.
+- While the action runs, set `isPending` and change the label (“Saving…”).
+- In forms, set `type="submit"` on the main button.
+- To go to another page, use a Link – not a button with a click handler.
+- Don’t add `aria-label` when the label is visible; icons passed as `startIcon` or `endIcon` are already hidden.
+
+## Testing status
+
+<TestingStatus />
+
+<ScreenReaderSteps />

@@ -1,0 +1,113 @@
+---
+title: Button
+excerpt: Starts an action on the current page – save, send, delete, open a dialog.
+type: component
+component: Button
+status: stable
+storybookId: components-actions-button--docs
+area: components
+order: 4
+---
+
+## Playground
+
+<Playground />
+
+## Overview
+
+A Button starts an action on the current page – save, send, delete, open a dialog. Its label is a verb that says what happens. It is built on React Aria, so it works the same with mouse, touch, keyboard and screen readers.
+
+<UsageWhen />
+
+### Variants
+
+Six weights, from the main action to actions inside text. Details under Variants.
+
+<Grid minItemSize="var(--medo-size-width-md)">
+  <ExampleTile label="Primary"><Button>Save changes</Button></ExampleTile>
+  <ExampleTile label="Secondary"><Button variant="secondary">Cancel</Button></ExampleTile>
+  <ExampleTile label="Ghost"><Button variant="ghost">Edit</Button></ExampleTile>
+  <ExampleTile label="Danger"><Button variant="danger">Delete project</Button></ExampleTile>
+  <ExampleTile label="Ghost danger"><Button variant="ghost-danger">Remove</Button></ExampleTile>
+  <ExampleTile label="Text"><Button variant="text">Show details</Button></ExampleTile>
+</Grid>
+
+## Formatting
+
+### Anatomy
+
+![A Save changes button with an icon. Marker 1 points to the container, 2 to the icon before the label, 3 to the label.](/spec/button/anatomy.svg)
+
+1. Container – the clickable area. Its color comes from the variant.
+2. Icon (optional) – before or after the label. Decorative.
+3. Label – a verb, one line.
+
+### Sizes
+
+md is the default. Use one size per group of buttons.
+
+![The three button sizes side by side: sm 32 px, md 40 px and lg 48 px high, each with a redline for its height.](/spec/button/sizes.svg)
+
+| Size | Height | Use for |
+| --- | --- | --- |
+| sm | 32 px | Dense areas: toolbars, tables, card headers. |
+| md | 40 px | The default for pages, forms and dialogs. |
+| lg | 48 px | Touch-first layouts and large calls to action. |
+
+### Alignment and spacing
+
+Group related buttons in a Button group: 8 px apart (`space-2`), all the same size, at most one primary. The main action sits at the end of the reading path.
+
+![A Button group with Delete on the left and Cancel and Save on the right. A redline marks the 8 px gap between Cancel and Save.](/spec/button/spacing.svg)
+
+- Footer of forms, dialogs and sheets: right-aligned, primary on the right, a destructive action on the far left.
+- Content (hero, teaser, empty state): left-aligned, primary first.
+- Below 640 px: stacked, full width, primary on top.
+- More than three actions: move the rest into an overflow menu.
+
+## Content
+
+| Element | Text style | Rule |
+| --- | --- | --- |
+| Label | `label-md` | Sentence case, 1–3 words, starts with a verb: “Save changes”. |
+| Label (lg) | `label-lg` | Same rules – lg only changes the size. |
+| Pending label | `label-md` | Says what is happening: “Saving…”. |
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <Stack gap="content">
+    <Example><Button>Save changes</Button></Example>
+    <Stack gap="content" align="start">
+      <Badge tone="success" size="sm">Do</Badge>
+      <p className="medo-text-body-sm medo-text-secondary">Name the action with a verb.</p>
+    </Stack>
+  </Stack>
+  <Stack gap="content">
+    <Example><Button>OK</Button></Example>
+    <Stack gap="content" align="start">
+      <Badge tone="danger" size="sm">Don't</Badge>
+      <p className="medo-text-body-sm medo-text-secondary">A label that needs its context.</p>
+    </Stack>
+  </Stack>
+</Grid>
+
+<UsageRules />
+
+## Variants
+
+<Stack gap="content">
+  <ExampleRow title="Primary" body="The main action of an area. One per area, at the end of the reading path."><Button>Save changes</Button></ExampleRow>
+  <ExampleRow title="Secondary" body="Actions next to the main one, such as Cancel or Back."><Button variant="secondary">Cancel</Button></ExampleRow>
+  <ExampleRow title="Ghost" body="Low emphasis: toolbars, card headers and actions repeated in lists."><Button variant="ghost">Edit</Button></ExampleRow>
+  <ExampleRow title="Danger" body="Destructive actions, such as the confirming button in a delete dialog. Only for actions that destroy something."><Button variant="danger">Delete project</Button></ExampleRow>
+  <ExampleRow title="Ghost danger" body="Destructive actions with low emphasis, such as Remove in a list."><Button variant="ghost-danger">Remove</Button></ExampleRow>
+  <ExampleRow title="Text" body="Actions inside or next to text. It looks quiet but runs an action – for navigation, use a Link."><Button variant="text">Show details</Button></ExampleRow>
+</Stack>
+
+## Related
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <Card title="Button group" subtitle="Spacing and order of related buttons." href="https://storybook.med-o.de/?path=/docs/components-actions-button--docs" density="compact" />
+  <RelatedComponent component="Icon Button" subtitle="An action shown only as an icon, with a tooltip." />
+  <RelatedComponent component="Link" subtitle="Goes to another page or place." />
+  <RelatedComponent component="Toggle Button" subtitle="Stays pressed – for on/off in toolbars." />
+</Grid>

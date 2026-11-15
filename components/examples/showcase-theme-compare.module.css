@@ -1,0 +1,89 @@
+/*
+ * Theme compare (Figma 67:2257): a framed area (border/default, radius/xl) where both theme copies lie on top of
+ * each other, each on its own surface/canvas. The scene is a grid instead of the design's free positions: the sign-up
+ * card, the two small panels beside it and the alert below – the same parts, aligned to the spacing rules. The
+ * badges sit 24 px from the corners. Below 640 px the Settings card replaces the scene (Figma 79:2562).
+ */
+.compare {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-xl);
+}
+
+.layer {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  padding: var(--medo-space-16) var(--medo-space-6);
+  background: var(--medo-color-surface-canvas);
+  color: var(--medo-color-text-primary);
+}
+
+.dark {
+  border-inline-start: var(--medo-border-width-thick) solid var(--medo-color-action-primary);
+}
+
+.badge {
+  position: absolute;
+  inset-block-start: var(--medo-space-6);
+  inset-inline-start: var(--medo-space-6);
+}
+
+.badgeEnd {
+  inset-inline: auto var(--medo-space-6);
+}
+
+.scene {
+  display: grid;
+  grid-template-columns: var(--medo-size-width-xl) var(--medo-size-width-lg);
+  gap: var(--medo-layout-gap-items);
+  align-items: center;
+}
+
+.signUp {
+  grid-row: 1;
+}
+
+.side {
+  grid-row: 1;
+}
+
+.alert {
+  grid-column: 1 / -1;
+  justify-self: center;
+  inline-size: var(--medo-size-width-xl);
+}
+
+.panel {
+  padding: var(--medo-space-4);
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-lg);
+  background: var(--medo-color-surface-raised);
+  box-shadow: var(--medo-shadow-elevation-1);
+}
+
+.mobileScene {
+  display: none;
+  inline-size: 100%;
+  max-inline-size: var(--medo-size-width-xl);
+}
+
+.slider {
+  max-inline-size: var(--medo-size-width-2xl);
+}
+
+@media (max-width: 639.98px) {
+  .layer {
+    padding: var(--medo-space-16) var(--medo-space-4);
+  }
+
+  .scene {
+    display: none;
+  }
+
+  .mobileScene {
+    display: block;
+  }
+}

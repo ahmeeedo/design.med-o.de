@@ -1,0 +1,34 @@
+/*
+ * The Playground (Figma Component · Guidelines 106:3998): a stage that shows the component, centered, and a control
+ * bar below on surface/subtle. Tokens only. The stage keeps a fixed minimum height (size/width/md, 240), so the page
+ * does not jump when a control changes the component's size.
+ */
+.playground {
+  overflow: hidden;
+  border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  border-radius: var(--medo-radius-lg);
+  background: var(--medo-color-surface-default);
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--medo-size-width-md);
+  padding: var(--medo-space-6);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--medo-space-6);
+  padding: var(--medo-space-4) var(--medo-space-6);
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+  background: var(--medo-color-surface-subtle);
+}
+
+/* Select fields as wide as in Figma (200, size/width/sm). */
+.select {
+  inline-size: var(--medo-size-width-sm);
+}

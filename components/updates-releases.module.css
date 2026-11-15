@@ -1,0 +1,22 @@
+/*
+ * A release on Updates (Figma 69:1135): a line on top, one `group` gap below it, the version and date in a 240 px
+ * column (size/width/md) one `items` gap from the changes. Below 640 px the version sits above its changes (79:2856).
+ */
+.release {
+  display: grid;
+  grid-template-columns: var(--medo-size-width-md) minmax(0, 1fr);
+  gap: var(--medo-layout-gap-items);
+  padding-block-start: var(--medo-layout-gap-group);
+  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
+}
+
+.list {
+  align-self: stretch;
+}
+
+@media (max-width: 639.98px) {
+  .release {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--medo-layout-gap-content);
+  }
+}
