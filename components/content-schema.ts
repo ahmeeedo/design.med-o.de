@@ -65,9 +65,10 @@ export const CONTENT_SCHEMA: Readonly<Record<string, SectionRule>> = {
     'References',
   ),
   'foundation/overview': free,
-  'foundation/guidelines': sections('How to combine', 'Light and Dark', "Do and don't", 'Related'),
+  // The combinations come first under their own headings (Surfaces, Text on backgrounds …), as in Figma 132:4909.
+  'foundation/guidelines': sections('Light and Dark', "Do and don't", 'Related'),
   'foundation/tokens': { sections: [fromData('One section per token group')] },
-  'foundation/code': sections('CSS variables', 'Tailwind classes', 'JavaScript'),
+  'foundation/code': sections('CSS', 'Tailwind', 'JavaScript'),
   'component/guidelines': {
     sections: [
       fromData('Playground'),
