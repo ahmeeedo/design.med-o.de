@@ -149,3 +149,38 @@ export function getReleases(): Promise<Release[]> {
   cache ??= load();
   return cache;
 }
+
+/** An entry together with the package it belongs to. */
+export interface VersionEntry extends ChangelogEntry {
+  package: PackageName;
+}
+
+/**
+ * One version of the system: both packages release in lockstep, so the Changelog and Updates show one box per
+ * version (Figma 145:5698) with every entry of both packages, @med-o/ui first.
+ */
+export interface Version {
+  version: string;
+  /** The anchor of the version on the Changelog: "0.10.0" → "v0-10-0". */
+  id: string;
+  /** The release date; both packages of one version share it. */
+  date?: string;
+  entries: VersionEntry[];
+}
+
+/** Every version with at least one entry, newest first. Versions where no package changed are left out. */
+export async function getVersions(): Promise<Version[]> {
+  const versions = new Map<string, Version>();
+  for (const release of await getReleases()) {
+    const version = versions.get(release.version) ?? {
+      version: release.version,
+      id: `v${release.version.replace(/\W+/g, '-')}`,
+      date: release.date,
+      entries: [],
+    };
+    version.date ??= release.date;
+    version.entries.push(...release.entries.map((entry) => ({ ...entry, package: release.package })));
+    versions.set(release.version, version);
+  }
+  return [...versions.values()].filter((v) => v.entries.length > 0);
+}

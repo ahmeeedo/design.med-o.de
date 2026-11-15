@@ -2,6 +2,7 @@
 # One word per line, sorted. Add a word only when it is spelled right; never to silence a typo.
 cookieless
 Coolify
+fieldsets
 llms
 medo
 Pagefind

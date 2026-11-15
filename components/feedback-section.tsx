@@ -12,16 +12,29 @@ import styles from './feedback-section.module.css';
 /** The heading's id; "On this page" links to it. */
 export const FEEDBACK_ID = 'feedback';
 
-export function FeedbackSection({ title, route }: { title: string; route: string }) {
+/** The box's texts when the page brings none. */
+const DEFAULT_TEXT = {
+  title: 'Help us improve this page',
+  text: 'Something missing or wrong? Open an issue on GitHub – or start a discussion.',
+};
+
+export function FeedbackSection({
+  title,
+  route,
+  text = DEFAULT_TEXT,
+}: {
+  title: string;
+  route: string;
+  /** Own heading and text of the box, e.g. on the Changelog. */
+  text?: { title: string; text: string };
+}) {
   return (
     <section className="medo-prose" data-pagefind-ignore="all">
       <h2 id={FEEDBACK_ID}>Feedback</h2>
       <Stack direction="horizontal" gap="items" align="center" className={styles.box}>
         <Stack gap="inline" className={styles.text}>
-          <p className="medo-text-label-md-strong">Help us improve this page</p>
-          <p className="medo-text-body-sm medo-text-secondary">
-            Something missing or wrong? Open an issue on GitHub – or start a discussion.
-          </p>
+          <p className="medo-text-label-md-strong">{text.title}</p>
+          <p className="medo-text-body-sm medo-text-secondary">{text.text}</p>
         </Stack>
         <Button
           variant="secondary"

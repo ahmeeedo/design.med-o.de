@@ -1,0 +1,135 @@
+---
+title: Form
+excerpt: Collect what people type or choose and send it once – with labels, help and errors at every field.
+type: pattern
+area: patterns
+order: 2
+related:
+  - /docs/guides/styling
+---
+
+## Overview
+
+Collect data the user types or chooses – contact, sign-up, settings, checkout – and send it once.
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <div>
+    ### When to use
+
+    <List type="check" size="md">
+      <ListItem>Collect data the user types or chooses: contact, sign-up, settings, checkout.</ListItem>
+    </List>
+  </div>
+  <div>
+    ### When not to use
+
+    - One setting with an immediate effect: a Switch on its own, no form.
+    - Filters that apply live: no submit button.
+  </div>
+</Grid>
+
+### Which pattern
+
+| Situation | Use |
+| --- | --- |
+| Data that is sent once, with a submit button | Form |
+| A long form with separate topics | Multi-step form |
+| One setting that takes effect at once | Switch, no form |
+| Filters that change a list while you choose | Filter controls, no submit |
+
+## Anatomy
+
+![A form with a name field and an email field showing an error, and a Send message button. Marker 1 points to the label, 2 to the input, 3 to the error text below the email field, 4 to the submit button.](/spec/form/anatomy.svg)
+
+1. Label – visible on every field. Required fields are marked.
+2. Input – the right type and autoComplete, so browsers can fill in.
+3. Help or error text – below the field, linked to it. An error says how to fix it.
+4. Submit – a Button that names the result.
+
+## Building it
+
+### Fields
+
+A field is a label, an input and a help or error text. Space fields with the rule `fields` (24 px, 16 px on mobile) and fieldsets with `group`.
+
+![Two fields, First name and Last name, one below the other. A redline between them marks the 24 px gap, the spacing rule fields.](/spec/form/spacing.svg)
+
+### Choices
+
+Group related choices in a Radio group or Checkbox group with its own label. With five or more options, use a Select.
+
+### Submit
+
+Put the buttons in a Button group in the footer context, primary on the right, and name it with the result: “Send message”, “Create account”. Never disable it while the form is incomplete, because people then cannot tell what is missing.
+
+## Behavior
+
+| Moment | What happens |
+| --- | --- |
+| While typing | Nothing is checked yet. |
+| Leaving a field | The field is checked; an error appears below it. |
+| Submit with errors | The focus moves to the first invalid field and its message is read. Screen readers hear how many fields need attention. |
+| Errors from the server | Shown at their field, like the ones found in the browser. |
+| Sending | The submit button is pending and says what happens: “Sending…”. |
+| Sent | A success Alert takes the place of the form: what happens next, and a way to send another one. |
+
+## Content
+
+- Give every field a visible label, and put help text below the label, never in the placeholder.
+- Mark the few optional fields, or all required ones – not both.
+- Write error messages that say how to fix the problem: “Enter a valid email address”.
+- Name the submit button with the result: “Send message”, “Create account”.
+
+## Accessibility
+
+| Key | Action |
+| --- | --- |
+| Tab / Shift + Tab | Moves through the fields in reading order. |
+| Enter | In a single-line field: submits the form. |
+| Space | Toggles a checkbox or switch, picks a radio. |
+
+<List type="check" size="md">
+  <ListItem>Help and error texts are linked to their field, so they are read with it.</ListItem>
+  <ListItem>Required fields are marked visibly and announced by screen readers.</ListItem>
+  <ListItem>On submit the focus moves to the first invalid field.</ListItem>
+</List>
+
+## Rules
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <div>
+    <Badge tone="success" size="sm">Do</Badge>
+
+    <List type="check" size="md">
+      <ListItem>One column, in the order people think about the data.</ListItem>
+      <ListItem>Use `autoComplete` and the right `type` (`email`, `tel`).</ListItem>
+      <ListItem>Group related choices with their own label.</ListItem>
+    </List>
+  </div>
+  <div>
+    <Badge tone="danger" size="sm">Don't</Badge>
+
+    - Disable submit until the form is valid – let people submit and show what is missing.
+    - Validate while someone is still typing.
+    - Clear what the user entered after an error.
+    - Collect errors in a summary above a long form – show them at the fields.
+  </div>
+</Grid>
+
+## Related
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <Card title="Multi-step form" subtitle="Long forms split into steps." href="https://storybook.med-o.de/?path=/docs/patterns-multi-step-form--docs" density="compact" />
+  <RelatedComponent component="Text Field" title="Field" subtitle="Label, input and help or error text." />
+  <RelatedComponent component="Radio" title="Radio group" subtitle="Pick one of 2–4 visible options." />
+  <RelatedComponent component="Button" title="Button group" subtitle="The submit and cancel buttons." />
+</Grid>
+
+## References
+
+<Stack gap="inline">
+  <Link href="https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html" variant="standalone" size="md" external target="_blank">WCAG 2.2 · 3.3.1 Error identification</Link>
+  <Link href="https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html" variant="standalone" size="md" external target="_blank">WCAG 2.2 · 3.3.2 Labels or instructions</Link>
+  <Link href="https://www.w3.org/WAI/WCAG22/Understanding/error-suggestion.html" variant="standalone" size="md" external target="_blank">WCAG 2.2 · 3.3.3 Error suggestion</Link>
+  <Link href="https://www.w3.org/WAI/WCAG22/Understanding/identify-input-purpose.html" variant="standalone" size="md" external target="_blank">WCAG 2.2 · 1.3.5 Identify input purpose</Link>
+</Stack>
