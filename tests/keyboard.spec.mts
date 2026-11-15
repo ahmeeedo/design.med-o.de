@@ -39,13 +39,16 @@ const searchDialog = (page: Page) => page.getByRole('dialog', { name: 'Search th
 const searchTrigger = (page: Page, width: 'desktop' | 'phone') => inHeader(page, 'button', width === 'desktop' ? 'Search …' : 'Search');
 
 /**
- * Checks that a search result is the active option. Focus stays in the search field, which points to the active option
- * with aria-activedescendant; typing makes the first result active, and the arrow keys move from there.
+ * Search results in the order the dialog shows them. Result ids end in "result:<path>" (site-search.tsx), which gives
+ * the page each result opens. Focus stays in the search field, which points to the active option with
+ * aria-activedescendant; typing makes the first result active, and the arrow keys move from there.
  */
-async function expectActiveOption(page: Page, name: string) {
-  const option = searchDialog(page).getByRole('option', { name });
-  const id = await option.getAttribute('id');
-  await expect(searchDialog(page).getByRole('searchbox')).toHaveAttribute('aria-activedescendant', id ?? '');
+const searchResults = (page: Page) => searchDialog(page).locator('[role="option"][id*="-option-result:"]');
+const RESULT_ID = '-option-result:';
+const pathOf = (id: string) => id.slice(id.indexOf(RESULT_ID) + RESULT_ID.length);
+
+async function expectActiveOption(page: Page, id: string) {
+  await expect(searchDialog(page).getByRole('searchbox')).toHaveAttribute('aria-activedescendant', id);
 }
 
 test.describe('desktop', () => {
@@ -114,16 +117,20 @@ test.describe('desktop', () => {
     await button.focus();
     await page.keyboard.press('Enter');
     await expect(searchDialog(page)).toBeVisible();
+    // A word on several pages, so there are at least two results. Which page ranks first changes with the content,
+    // so the test reads the order from the dialog instead of naming pages.
     await page.keyboard.type('install');
-    await expect(searchDialog(page).getByRole('option', { name: 'Introduction' })).toBeVisible();
-    // The Overview group comes before the site pages, so the docs page is the first result and active at once.
-    await expectActiveOption(page, 'Introduction');
+    const results = searchResults(page);
+    await expect(results.nth(1)).toBeVisible();
+    const first = (await results.nth(0).getAttribute('id'))!;
+    const second = (await results.nth(1).getAttribute('id'))!;
+    await expectActiveOption(page, first);
     await page.keyboard.press('ArrowDown');
-    await expectActiveOption(page, 'med.o Design System');
+    await expectActiveOption(page, second);
     await page.keyboard.press('ArrowUp');
-    await expectActiveOption(page, 'Introduction');
+    await expectActiveOption(page, first);
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL('/docs/overview/introduction');
+    await expect(page).toHaveURL(pathOf(first));
   });
 
   test('Esc clears a filled search first, then closes it and returns focus to the button', async ({ page }) => {
