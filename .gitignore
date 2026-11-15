@@ -14,6 +14,13 @@ generated/
 test-results/
 playwright-report/
 blob-report/
+# Screenshot references are made on the Linux runner only (tests/screenshots.spec.mts)
+tests/screenshots/*-win32.png
+tests/screenshots/*-darwin.png
+
+# Lighthouse CI results (npm run check:lighthouse)
+.lighthouseci/
+lighthouse/
 
 # Environment files
 .env*

@@ -16,6 +16,12 @@
 #   links    every internal link and asset in the export reaches a file. Red = a broken link: the log lists page → target.
 #   sitemap  sitemap.xml lists every page of the export and nothing else, and robots.txt names it. Red = the log lists
 #            the missing and extra URLs (scripts/check-sitemap.mjs).
+#   screenshots every template page against its reference in tests/screenshots/ (Light and Dark at 1440, Light at
+#            390). Red = a page looks different, or has no reference yet: the diff is in the Playwright report, new
+#            references in the "screenshots" artifact. To accept a change: Actions → CI → Run workflow → your branch →
+#            "Update screenshots" (see tests/screenshots.spec.mts).
+#   lighthouse Lighthouse on mobile for one page per type, with the scores and LCP in the summary and the reports in
+#            the "lighthouse" artifact. Only warns for now: it never turns red on a score.
 # “Deploy” starts only when all of them passed for a push to main. The job names are the required checks of main.
 name: CI
 
@@ -23,6 +29,14 @@ on:
   pull_request:
   push:
     branches: [main]
+  # By hand, on any branch: the same checks; with "Update screenshots" the screenshots job rewrites the references
+  # that differ and uploads them.
+  workflow_dispatch:
+    inputs:
+      update-screenshots:
+        description: Update screenshots
+        type: boolean
+        default: false
 
 # A new push to the same branch cancels the run that is still going.
 concurrency:
@@ -208,3 +222,78 @@ jobs:
           name: site
           path: out
       - run: npm run check:sitemap
+
+  screenshots:
+    needs: build
+    # Same setup as a11y (see there). The references are the files of this runner image: fonts render differently on
+    # other systems, so they are made here and nowhere else.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      # "default" compares and writes missing references (their tests fail); "changed" also rewrites those that differ.
+      - name: Compare with the references
+        env:
+          UPDATE: ${{ inputs.update-screenshots && 'changed' || 'default' }}
+        run: npm run test:screenshots -- --update-snapshots="$UPDATE"
+      - name: Find new or updated references
+        id: references
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain -- tests/screenshots)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "New or updated screenshots: download the \"screenshots\" artifact, unzip it into tests/screenshots/ and commit the files." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.references.outputs.changed == 'true'
+        with:
+          name: screenshots
+          path: tests/screenshots/*-linux.png
+          retention-days: 14
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report-screenshots
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  lighthouse:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: out
+      # The runner image's Chrome, Lighthouse's mobile profile, 3 runs per page (lighthouserc.json). The assertions
+      # only warn; the table goes to the summary.
+      - run: npm run check:lighthouse
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse
+          path: lighthouse/
+          if-no-files-found: ignore
+          retention-days: 14
