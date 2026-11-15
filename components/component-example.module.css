@@ -1,0 +1,27 @@
+/*
+ * Example frames on component pages (Figma Component · Guidelines 106:3625): a live component centered on
+ * surface/subtle, alone, as a tile with a label below, or as a row with a title and text next to it. Tokens only;
+ * the library has no frame for live examples, so this is the closest documented case.
+ */
+.frame {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--medo-space-10);
+  padding-inline: var(--medo-space-4);
+  border-radius: var(--medo-radius-lg);
+  background: var(--medo-color-surface-subtle);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--medo-size-width-lg) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--medo-layout-gap-content);
+}
+
+/* Below 640 px the text goes under the example, as on the phone frames. */
+@media (max-width: 639.98px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

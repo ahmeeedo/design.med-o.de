@@ -1,0 +1,55 @@
+---
+tab: styling
+excerpt: The tokens behind every part of the button – color, type, structure and sizes.
+---
+
+## Color
+
+Primary. Every variant uses the same elements with its own `action-*` and `text-*` tokens.
+
+| Element | Property | Token |
+| --- | --- | --- |
+| Container | Background | `action-primary` |
+| Container: hover | Background | `action-primary-hover` |
+| Container: pressed | Background | `action-primary-pressed` |
+| Label, icon | Text color | `text-on-action` |
+| Focus ring | Box shadow (inset) | `shadow-focus-ring-inset` |
+| Container: disabled | Background | `action-disabled` |
+| Label: disabled | Text color | `text-disabled` |
+
+## Typography
+
+Labels are sentence case and never wrap.
+
+| Element | Font size | Font weight | Token |
+| --- | --- | --- | --- |
+| Label (sm, md) | 14 px / 0.875 rem | Medium (500) | `typography-label-md` |
+| Label (lg) | 16 px / 1 rem | Medium (500) | `typography-label-lg` |
+
+## Structure
+
+Size md. Height, padding and gap are fixed; the width follows the label.
+
+![A md button with an icon and redlines: 40 px height, 16 px padding on each side, 8 px between icon and label, 16 px icon.](/spec/button/structure.svg)
+
+| Element | Property | px / rem | Token |
+| --- | --- | --- | --- |
+| Container | Height | 40 / 2.5 | `size-control-md` |
+| Container | Padding left, right | 16 / 1 | `space-4` |
+| Container | Border radius | 8 / 0.5 | `radius-md` |
+| Icon | Size | 16 / 1 | `size-icon-sm` |
+| Icon, label | Gap | 8 / 0.5 | `space-2` |
+| Focus ring | Width | 2 / 0.125 | `focus-ring-width` |
+| Button group | Gap between buttons | 8 / 0.5 | `layout-gap-inline` |
+
+## Sizes
+
+Three heights. lg is for touch-first layouts.
+
+![The three button sizes side by side: sm 32 px, md 40 px and lg 48 px high, each with a redline for its height.](/spec/button/sizes.svg)
+
+| Size | Height | Padding | Gap | Icon | Label |
+| --- | --- | --- | --- | --- | --- |
+| sm | 32 · `size-control-sm` | 12 · `space-3` | 4 · `space-1` | 16 · `size-icon-sm` | `label-md` |
+| md | 40 · `size-control-md` | 16 · `space-4` | 8 · `space-2` | 16 · `size-icon-sm` | `label-md` |
+| lg | 48 · `size-control-lg` | 20 · `space-5` | 8 · `space-2` | 20 · `size-icon-md` | `label-lg` |

@@ -22,36 +22,11 @@
  *   References to other sites: <Stack gap="inline"> with one <Link href variant="standalone" size="md" external
  *   target="_blank"> per source.
  */
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { Children, isValidElement, type ComponentPropsWithoutRef } from 'react';
 import type { MDXComponents } from 'mdx/types';
-import { Badge, Image, Link, List, ListItem, Stack } from '@med-o/ui';
+import { Badge, Link, List, ListItem, Stack } from '@med-o/ui';
 import { RelatedComponent } from '../related-component';
 import { contentComponents } from './content';
-
-/** Images that pages may show: SVG exports from Figma under public/spec/. */
-const SPEC_IMAGE = /^\/spec\/[\w-]+\/[\w-]+\.svg$/;
-
-/** A Markdown image: a spec image from public/spec/, shown whole, at the size of its SVG. Anything else fails. */
-async function SpecImage({ src, alt = '' }: ComponentPropsWithoutRef<'img'>) {
-  if (typeof src !== 'string' || !SPEC_IMAGE.test(src)) throw new Error(`Image "${String(src)}": use an SVG under /spec/<page>/`);
-  if (!alt.trim()) throw new Error(`Image "${src}" needs alt text that names its labeled parts`);
-  const svg = await readFile(path.join(process.cwd(), 'public', src), 'utf8');
-  const width = Number(/<svg[^>]*\swidth="(\d+)"/.exec(svg)?.[1]) || undefined;
-  const height = Number(/<svg[^>]*\sheight="(\d+)"/.exec(svg)?.[1]) || undefined;
-  return <Image src={src} alt={alt} width={width} height={height} ratio="original" fit="contain" radius="lg" />;
-}
-
-/** A paragraph; one that holds only a spec image renders the image without the <p> (see the header). */
-function Paragraph({ children }: ComponentPropsWithoutRef<'p'>) {
-  const parts = Children.toArray(children).filter((part) => typeof part !== 'string' || part.trim() !== '');
-  const images = parts.filter((part) => isValidElement(part) && part.type === SpecImage);
-  if (images.length === 0) return <p>{children}</p>;
-  if (parts.length === 1) return images[0];
-  const src = isValidElement<{ src?: string }>(images[0]) ? images[0].props.src : '';
-  throw new Error(`Image "${src}" sits inside running text; put it on a line of its own`);
-}
+import { Paragraph, SpecImage } from './spec-image';
 
 export const patternsComponents: MDXComponents = {
   ...contentComponents,
