@@ -22,7 +22,8 @@
 #            references in the "screenshots" artifact. To accept a change: Actions → CI → Run workflow → your branch →
 #            "Update screenshots" (see tests/screenshots.spec.mts).
 #   lighthouse Lighthouse on mobile for one page per type, with the scores and LCP in the summary and the reports in
-#            the "lighthouse" artifact. Only warns for now: it never turns red on a score.
+#            the "lighthouse" artifact. Red = accessibility, best practices or SEO below 100 on a page. Performance
+#            below 95 and LCP over 2.5 s only warn until images show before hydration (the library Image).
 # “Deploy” starts only when all of them passed for a push to main. The job names are the required checks of main.
 name: CI
 
@@ -289,9 +290,11 @@ jobs:
         with:
           name: site
           path: out
-      # The runner image's Chrome, Lighthouse's mobile profile, 3 runs per page (lighthouserc.json). The assertions
-      # only warn; the table goes to the summary.
-      - run: npm run check:lighthouse
+      # The runner image's Chrome, Lighthouse's mobile profile, 3 runs per page (lighthouserc.json). lhci writes the
+      # reports before it checks the assertions, so the summary step runs after a failed assertion too.
+      - run: npx lhci autorun
+      - run: node scripts/lighthouse-summary.mjs
+        if: always()
       - uses: actions/upload-artifact@v7
         if: always()
         with:

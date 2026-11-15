@@ -4,7 +4,8 @@
  * "filesystem"). In CI the table also goes to the job summary. The reports themselves stay in lighthouse/ and in the
  * job's artifact; nothing is uploaded anywhere else.
  * Settings: Lighthouse's default mobile profile (emulated phone, throttled network and CPU), 3 runs per page.
- * The assertions in lighthouserc.json only warn; this script never fails on a score.
+ * The assertions live in lighthouserc.json: accessibility, best practices and SEO must score 100 on every page and
+ * fail `lhci autorun`; performance and LCP only warn. This script never fails on a score.
  */
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
