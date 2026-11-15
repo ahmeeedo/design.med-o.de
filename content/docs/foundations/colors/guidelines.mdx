@@ -1,0 +1,84 @@
+---
+tab: guidelines
+---
+
+## Surfaces
+
+At most three levels: page → container → inset.
+
+| Level | Token | For |
+| --- | --- | --- |
+| Page | `surface/canvas` | The page background. |
+| Container | `surface/default` | Cards, inputs, panels. |
+| Inset | `surface/subtle` | Table headers, hover rows, code blocks. |
+| Floating | `surface/raised` | Dropdowns, dialogs, popovers – always with elevation. |
+
+## Text on backgrounds
+
+Use only these combinations. Each pair reaches 4.5 : 1 in Light and Dark.
+
+| Background | Text | Checked |
+| --- | --- | --- |
+| `surface/canvas, default, raised, subtle` | `text/primary, text/secondary` | <Badge tone="success" size="sm">≥ 4.5 : 1</Badge> |
+| `surface/brand-subtle, brand-muted` | `text/primary, text/secondary` | <Badge tone="success" size="sm">≥ 4.5 : 1</Badge> |
+| `surface/brand-bold` | `text/on-brand, text/on-brand-secondary` | <Badge tone="success" size="sm">≥ 4.5 : 1</Badge> |
+| `surface/inverse` | `text/inverse, text/inverse-secondary` | <Badge tone="success" size="sm">≥ 4.5 : 1</Badge> |
+| `action/primary, -hover, -pressed` | `text/on-action` | <Badge tone="success" size="sm">≥ 4.5 : 1</Badge> |
+
+## Brand surfaces
+
+brand-subtle highlights an area and keeps the normal text colors. brand-bold is for heroes and calls to action and takes only the on-brand text.
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <ColorSample surface="surface/brand-subtle" title="New in 0.10" body="Code block with syntax colors." caption="surface/brand-subtle · text/primary, text/secondary" />
+  <ColorSample surface="surface/brand-bold" title="New in 0.10" titleColor="text/on-brand" body="Code block with syntax colors." bodyColor="text/on-brand-secondary" caption="surface/brand-bold · text/on-brand, text/on-brand-secondary" />
+</Grid>
+
+## Light and Dark
+
+Every semantic token switches with the theme. Design once in Light; Dark follows.
+
+- Check every screen in both themes before handoff.
+- Don’t add colors that exist only in Dark – change a token instead (Guides › Theming).
+- Images and illustrations may need their own Dark version; colors don’t.
+
+## Do and don't
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <Stack gap="content">
+    <ColorSample variant="example" surface="surface/brand-subtle" body="text/primary on surface/brand-subtle" />
+    <Stack gap="content" align="start">
+      <Badge tone="success" size="sm">Do</Badge>
+      <p className="medo-text-body-sm medo-text-secondary">A checked pair: readable in Light and Dark.</p>
+    </Stack>
+  </Stack>
+  <Stack gap="content">
+    <ColorSample variant="example" surface="surface/brand-bold" titleColor="text/secondary" body="text/secondary on surface/brand-bold" failing />
+    <Stack gap="content" align="start">
+      <Badge tone="danger" size="sm">Don't</Badge>
+      <p className="medo-text-body-sm medo-text-secondary">An unchecked pair: may fall below 4.5 : 1. Use text/on-brand.</p>
+    </Stack>
+  </Stack>
+</Grid>
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <List type="check" size="md">
+    <ListItem>Use semantic tokens only.</ListItem>
+    <ListItem>Use border/strong for control boundaries.</ListItem>
+    <ListItem>Pair feedback colors with an icon and text.</ListItem>
+  </List>
+  <List type="bullet" size="md">
+    <ListItem>Use palette colors in products.</ListItem>
+    <ListItem>Use border/default around inputs – it is decorative.</ListItem>
+    <ListItem>Show status by color alone.</ListItem>
+  </List>
+</Grid>
+
+## Related
+
+<Grid minItemSize="var(--medo-size-width-lg)">
+  <Card title="Typography" subtitle="Text styles and their tokens." href="https://storybook.med-o.de/?path=/docs/foundations-typography--docs" density="compact" />
+  <Card title="Elevation & motion" subtitle="Shadows that lift floating surfaces." href="https://storybook.med-o.de/?path=/docs/foundations-elevation-motion--docs" density="compact" />
+  <Card title="Theming" subtitle="Your brand colors on top of the tokens." href="https://storybook.med-o.de/?path=/docs/guides-theming--docs" density="compact" />
+  <Card title="Accessibility" subtitle="Contrast, focus and states." href="https://storybook.med-o.de/?path=/docs/foundations-accessibility--docs" density="compact" />
+</Grid>

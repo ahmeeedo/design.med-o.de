@@ -46,6 +46,9 @@ passes('foundation', 'overview', ['Layers']);
 passes('component', 'code', []);
 passes('component', 'guidelines', ['Overview', 'Formatting', 'Content', 'Variants', 'Related']);
 passes('foundation', 'tokens', []);
+passes('foundation', 'guidelines', ['Surfaces', 'Text on backgrounds', 'Brand surfaces', 'Light and Dark', "Do and don't", 'Related']);
+fails('foundation', 'guidelines', ['Surfaces', "Do and don't", 'Related'], 'missing section "Light and Dark"');
+passes('foundation', 'code', ['CSS', 'Tailwind', 'JavaScript']);
 
 // Unknown tabs have no rule.
 fails('component', 'props', ['Color'], 'no content schema');

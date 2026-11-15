@@ -1,0 +1,58 @@
+---
+tab: tokens
+excerpt: Every color token in Light and Dark, with the palette step behind it and what it is for.
+---
+
+## Surfaces
+
+Backgrounds from page to overlay. At most three levels: page → container → inset.
+
+<TokenTable groups={['surface', 'overlay']} label="Surface tokens" />
+
+## Text
+
+Each text token is made for certain backgrounds – see Guidelines › Text on backgrounds.
+
+<TokenTable groups={['text']} label="Text tokens" />
+
+## Borders & focus
+
+border/default is decorative. Control boundaries use border/strong (≥ 3 : 1).
+
+<TokenTable groups={['border', 'focus']} label="Border and focus tokens" />
+
+## Actions & states
+
+Filled controls have their own hover and pressed tokens. Transparent ones use the state layers.
+
+<TokenTable groups={['action', 'state']} label="Action and state tokens" />
+
+## Feedback colors
+
+Success, warning, danger and info: surface, border, text, solid and on-solid for each.
+
+<TokenTable groups={['feedback']} label="Feedback tokens" />
+
+## Avatar
+
+Background and text pairs for initials, one per color.
+
+<TokenTable groups={['avatar']} label="Avatar tokens" />
+
+## Code
+
+Syntax colors in Code block. Plain code uses text/primary.
+
+<TokenTable groups={['code']} label="Code tokens" />
+
+## Shadow colors
+
+Used inside the elevation tokens, not directly.
+
+<TokenTable groups={['shadow']} label="Shadow color tokens" />
+
+## Palette
+
+For reference only. Products never use these directly.
+
+<TokenTable groups={['brand', 'slate', 'sky', 'green', 'amber', 'red', 'violet', 'pink', 'white', 'black', 'white-alpha', 'black-alpha', 'slate-alpha']} label="Palette tokens" />
