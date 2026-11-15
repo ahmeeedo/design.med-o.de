@@ -96,12 +96,17 @@
     column-gap: var(--medo-layout-gap-group);
   }
 
-  /* Level with the hero: below the header (space/16) and the page's top padding (space/8). */
+  /*
+   * Level with the hero: below the header (space/16) and the page's top padding (space/8). A long list (the
+   * Changelog's versions) scrolls inside the viewport, so its last links stay reachable while the rail is sticky.
+   */
   .rail {
     position: sticky;
     inset-block-start: calc(var(--medo-space-16) + var(--medo-space-8));
     display: block;
     align-self: start;
+    max-block-size: calc(100dvh - var(--medo-space-16) - 2 * var(--medo-space-8));
+    overflow-y: auto;
   }
 
   .disclosure {
