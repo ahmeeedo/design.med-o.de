@@ -1,15 +1,9 @@
 /**
- * How MDX elements render on docs pages: every section is medo-prose, so headings, paragraphs and spacing come from
- * the library; lists, links, inline code, code blocks and tables are the components. Fenced code is highlighted
- * here, in a server component at build time – no highlighting code reaches the browser. Pages start at "##": the
- * page title is the h1 of the hero.
+ * The content MDX map: baseComponents (base.tsx) plus the blocks of long-form docs – code in tabs, tables, cards and
+ * grids. Guides use it; the area maps of patterns, foundations and components build on it (see base.tsx for the
+ * convention). Code is highlighted at build time, as in base.tsx.
  *
  * Authoring, for copying into new pages:
- *
- *   A code block. Optional after the language: title="file name" and lineNumbers.
- *     ```css title="main.css" lineNumbers
- *     @import "@med-o/design-tokens/css/tokens.css";
- *     ```
  *
  *   The same code in variants (CodeBlockTabs, 2–4 tabs): fenced blocks inside <CodeTabs>, each titled with its tab
  *   label. `label` names the tab list for screen readers. Keep a blank line after the opening and before the closing
@@ -34,53 +28,11 @@
  *   Related pages: <Grid minItemSize="var(--medo-size-width-lg)"> with one <Card title subtitle href
  *   density="compact" /> per page.
  */
-import { Children, isValidElement, type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react';
+import { Children, isValidElement, type ReactElement, type ReactNode } from 'react';
 import type { MDXComponents } from 'mdx/types';
-import { Card, Code, CodeBlock, CodeBlockTabs, Grid, Link, List, ListItem, StaticTable } from '@med-o/ui';
+import { Card, Code, CodeBlockTabs, Grid, StaticTable } from '@med-o/ui';
 import { highlight } from '@med-o/ui/highlight';
-
-type Language = Parameters<typeof highlight>[1];
-
-/** A fenced block as MDX hands it over: <pre> around <code class="language-…" metastring="…">. */
-interface FencedCode {
-  code: string;
-  language: string;
-  title?: string;
-  lineNumbers: boolean;
-}
-
-type CodeElementProps = { className?: string; metastring?: string; children?: ReactNode };
-
-function fencedCode(pre: ReactNode): FencedCode {
-  const element = isValidElement<{ children?: ReactNode }>(pre) ? pre.props.children : undefined;
-  const props = isValidElement<CodeElementProps>(element) ? element.props : {};
-  const meta = props.metastring ?? '';
-  return {
-    code: typeof props.children === 'string' ? props.children.replace(/\n$/, '') : '',
-    language: /language-([\w-]+)/.exec(props.className ?? '')?.[1] ?? 'text',
-    title: /(?:^|\s)title="([^"]*)"/.exec(meta)?.[1],
-    lineNumbers: /(?:^|\s)lineNumbers(?:\s|$)/.test(meta),
-  };
-}
-
-/** A fenced code block. */
-async function Pre({ children }: ComponentPropsWithoutRef<'pre'>) {
-  const { code, language, title, lineNumbers } = fencedCode(<pre>{children}</pre>);
-
-  return (
-    <div translate="no">
-      <CodeBlock
-        code={code}
-        language={language}
-        tokens={await highlight(code, language as Language)}
-        title={title}
-        lineNumbers={lineNumbers}
-        copyable
-        aria-label={title ? undefined : `Code example (${language})`}
-      />
-    </div>
-  );
-}
+import { baseComponents, fencedCode, type Language } from './base';
 
 /** Fenced blocks as tabs of one CodeBlockTabs; each block's title is its tab label. A wrong group fails the build. */
 async function CodeTabs({ label, children }: { label: string; children: ReactNode }) {
@@ -127,31 +79,8 @@ function cell(Tag: 'th' | 'td', extra: { scope?: 'col' } = {}) {
   return TableCell;
 }
 
-function Anchor({ href = '', children }: ComponentPropsWithoutRef<'a'>) {
-  const external = /^https?:\/\//.test(href);
-  return (
-    <Link href={href} external={external} target={external ? '_blank' : undefined}>
-      {children}
-    </Link>
-  );
-}
-
-export const mdxComponents: MDXComponents = {
-  section: ({ children }) => <section className="medo-prose">{children}</section>,
-  a: Anchor,
-  ul: ({ children }) => (
-    <List type="bullet" size="md">
-      {children}
-    </List>
-  ),
-  ol: ({ children }) => (
-    <List type="number" size="md">
-      {children}
-    </List>
-  ),
-  li: ({ children }) => <ListItem>{children}</ListItem>,
-  code: Code,
-  pre: Pre,
+export const contentComponents: MDXComponents = {
+  ...baseComponents,
   table: ({ children }) => <StaticTable variant="content">{children}</StaticTable>,
   th: cell('th', { scope: 'col' }),
   td: cell('td'),
