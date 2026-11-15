@@ -1,8 +1,7 @@
 /**
- * The MDX mapping for running text only: sections as medo-prose, links, lists and inline code. The legal pages use it
+ * The prose MDX map: running text only – sections as medo-prose, links, lists and inline code. The legal pages use it
  * on its own, so they load none of the client code that docs pages need for code blocks, tables, cards and images;
- * Next ships every client component a page's server modules import, used or not. The docs map in mdx-components.tsx
- * starts from this one.
+ * Next ships every client component a page's server modules import, used or not. base.tsx starts from this one.
  */
 import type { ComponentPropsWithoutRef } from 'react';
 import type { MDXComponents } from 'mdx/types';

@@ -2,7 +2,7 @@
  * Rehype plugin for docs pages: keeps the meta string of a fenced code block, the text after the language
  * (```css title="main.css" lineNumbers). The Markdown-to-HTML step stores it only in the node's data, which the MDX
  * compiler drops, so this plugin copies it to a `metastring` property that the code block components in
- * mdx-components.tsx read.
+ * components/mdx/ read.
  */
 import type { Element, Root, RootContent } from 'hast';
 

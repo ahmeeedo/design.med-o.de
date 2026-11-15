@@ -1,6 +1,6 @@
 /**
  * The legal pages (imprint, privacy) from content/legal/<name>.mdx: a title, a short line below it and the text,
- * rendered at build time with the running-text part of the docs MDX mapping (mdx-prose.tsx), so they load no client
+ * rendered at build time with the running-text part of the docs MDX mapping (components/mdx/prose.tsx), so they load no client
  * code for code blocks, tables or images. The front matter is checked like docs content, so a broken file fails the
  * build. The pages are not marked for search: people search the docs for content, and the footer links these pages
  * on every page.
@@ -13,7 +13,7 @@ import { Container, Stack } from '@med-o/ui';
 import { VFile } from 'vfile';
 import { matter } from 'vfile-matter';
 import { z } from 'zod';
-import { proseComponents } from './mdx-prose';
+import { proseComponents } from './mdx/prose';
 import { PageMain } from './page-main';
 import { rehypeSections } from './rehype-sections';
 
