@@ -86,7 +86,7 @@ export function UpdatesReleases({ versions }: { versions: Version[] }) {
                   <Badge tone={group.tone}>{group.label}</Badge>
                   <List type="bullet" size="md" className={styles.list}>
                     {entries.map((entry) => (
-                      <ListItem key={`${entry.package}-${entry.commit}`}>{plainSummary(entry.summary)}</ListItem>
+                      <ListItem key={entry.key}>{plainSummary(entry.summary)}</ListItem>
                     ))}
                   </List>
                 </Stack>

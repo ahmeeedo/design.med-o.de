@@ -75,7 +75,7 @@ export function Release({ version, id, headingLevel = 2, query, preview = RELEAS
           <ul className={styles.changes}>
             {group.entries.map((entry, index) => (
               <Change
-                key={`${entry.package}-${entry.commit}`}
+                key={entry.key}
                 entry={entry}
                 query={query}
                 hidden={preview !== false && !expanded && index >= preview}

@@ -14,7 +14,7 @@ export function BeforeYouUpdate({ entries }: { entries: VersionEntry[] }) {
     <Alert tone="warning" title="Before you update">
       <Stack gap="inline">
         {breaking.map((entry) => (
-          <p key={`${entry.package}-${entry.commit}`}>
+          <p key={entry.key}>
             {plainSummary([entry.breaking!.text, entry.breaking!.update].filter(Boolean).join(' '))}
           </p>
         ))}
