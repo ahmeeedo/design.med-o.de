@@ -153,6 +153,8 @@ export function getReleases(): Promise<Release[]> {
 /** An entry together with the package it belongs to. */
 export interface VersionEntry extends ChangelogEntry {
   package: PackageName;
+  /** Unique within the version, for React lists: one changeset commit can add several entries to a package. */
+  key: string;
 }
 
 /**
@@ -179,7 +181,9 @@ export async function getVersions(): Promise<Version[]> {
       entries: [],
     };
     version.date ??= release.date;
-    version.entries.push(...release.entries.map((entry) => ({ ...entry, package: release.package })));
+    version.entries.push(
+      ...release.entries.map((entry, index) => ({ ...entry, package: release.package, key: `${release.package}-${entry.commit}-${index}` })),
+    );
     versions.set(release.version, version);
   }
   return [...versions.values()].filter((v) => v.entries.length > 0);

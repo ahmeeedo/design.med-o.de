@@ -1,0 +1,13 @@
+/*
+ * Showcase (Figma 67:979): the intro starts one section gap below the header, as in Figma (96 px on desktop), so the
+ * page adds the difference to the top padding of <main>. The reasons are a plain list.
+ */
+.page {
+  padding-block-start: calc(var(--medo-layout-gap-section) - var(--medo-space-8));
+}
+
+.reasons {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
