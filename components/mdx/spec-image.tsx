@@ -6,7 +6,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { ComponentPropsWithoutRef } from 'react';
+import { Children, isValidElement, type ComponentPropsWithoutRef } from 'react';
 import { Image } from '@med-o/ui';
 
 /** Images that pages may show: SVG exports from Figma under public/spec/. */
@@ -19,4 +19,18 @@ export async function SpecImage({ src, alt = '' }: ComponentPropsWithoutRef<'img
   const width = Number(/<svg[^>]*\swidth="(\d+)"/.exec(svg)?.[1]) || undefined;
   const height = Number(/<svg[^>]*\sheight="(\d+)"/.exec(svg)?.[1]) || undefined;
   return <Image src={src} alt={alt} width={width} height={height} ratio="original" fit="contain" radius="lg" />;
+}
+
+/**
+ * A paragraph for maps that show spec images. Markdown wraps an image on its own line in <p>, and Image renders a
+ * <div>, which may not sit inside <p>: the browser would split the paragraph and React would render the page again.
+ * A paragraph that holds only a spec image renders the image alone; an image inside running text fails the build.
+ */
+export function Paragraph({ children }: ComponentPropsWithoutRef<'p'>) {
+  const parts = Children.toArray(children).filter((part) => typeof part !== 'string' || part.trim() !== '');
+  const images = parts.filter((part) => isValidElement(part) && part.type === SpecImage);
+  if (images.length === 0) return <p>{children}</p>;
+  if (parts.length === 1) return images[0];
+  const src = isValidElement<{ src?: string }>(images[0]) ? images[0].props.src : '';
+  throw new Error(`Image "${src}" sits inside running text; put it on a line of its own`);
 }

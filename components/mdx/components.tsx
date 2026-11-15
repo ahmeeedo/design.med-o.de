@@ -30,7 +30,7 @@ import { RelatedComponent } from '../related-component';
 import { StorybookCard } from '../storybook-card';
 import { UsageRules, UsageWhen } from '../usage-blocks';
 import { contentComponents } from './content';
-import { SpecImage } from './spec-image';
+import { Paragraph, SpecImage } from './spec-image';
 
 /** Components the Playground renders (components/playground.tsx). A page for another one fails until it is added. */
 const PLAYGROUND_COMPONENTS = ['Button'];
@@ -60,6 +60,7 @@ function PlaygroundBlock({ entry }: { entry: ManifestComponent }) {
 
 export const componentsComponents: MDXComponents = {
   ...contentComponents,
+  p: Paragraph,
   img: SpecImage,
   List,
   ListItem,
