@@ -3,8 +3,10 @@
  * index that `npm run build` writes to out/pagefind. Pagefind loads on the first open, never with the page, and the
  * bundler leaves its import alone – it is a file of the export, not a module of the app.
  * With an empty query the dialog lists the docs pages and the site pages, so it is never empty. A result shows the
- * page title and the Pagefind excerpt as its description. `next dev` has no index: the dialog says so and keeps the
- * suggestions. Suggestions and results use different id prefixes: React Aria keeps an item's id for its lifetime.
+ * page title and the Pagefind excerpt as its description. Results are grouped by the page's area meta in a fixed
+ * order (GROUPS); within a group they keep Pagefind's ranking, which already weights the title (h1 and title meta).
+ * `next dev` has no index: the dialog says so and keeps the suggestions. Suggestions and results use different id
+ * prefixes: React Aria keeps an item's id for its lifetime.
  */
 'use client';
 
@@ -39,6 +41,16 @@ interface Hit {
 
 const PAGEFIND_URL = '/pagefind/pagefind.js';
 const MAX_RESULTS = 10;
+
+/** The area of the site pages (Home, Showcase, Updates), as their data-pagefind-meta names it. */
+const SITE_AREA = 'Pages';
+/** Docs areas in result order; an area not listed follows them, and the site pages come last. */
+const GROUPS = ['Components', 'Foundations', 'Patterns', 'Guides', 'Overview'];
+const groupRank = (area: string) => {
+  if (area === SITE_AREA) return GROUPS.length + 1;
+  const index = GROUPS.indexOf(area);
+  return index === -1 ? GROUPS.length : index;
+};
 
 const SITE_PAGES = [
   { label: 'Home', href: '/' },
@@ -127,7 +139,7 @@ export function SiteSearch({
         url: toHref(d.url),
         title: d.meta.title ?? toHref(d.url),
         excerpt: toText(d.excerpt),
-        area: d.meta.area ?? 'Pages',
+        area: d.meta.area ?? SITE_AREA,
       })),
     );
     setPending(false);
@@ -137,13 +149,15 @@ export function SiteSearch({
   const noResults = (value: string) =>
     status === 'unavailable' ? 'Search works in the built site. Run npm run build and open the exported site.' : `No results for “${value}”`;
 
-  // Results grouped by area, in the order Pagefind ranks their best hit.
-  const groups = hits.reduce<{ area: string; hits: Hit[] }[]>((list, hit) => {
-    const group = list.find((g) => g.area === hit.area);
-    if (group) group.hits.push(hit);
-    else list.push({ area: hit.area, hits: [hit] });
-    return list;
-  }, []);
+  // Results grouped by area in the fixed order; the hits inside a group stay in Pagefind's order.
+  const groups = hits
+    .reduce<{ area: string; hits: Hit[] }[]>((list, hit) => {
+      const group = list.find((g) => g.area === hit.area);
+      if (group) group.hits.push(hit);
+      else list.push({ area: hit.area, hits: [hit] });
+      return list;
+    }, [])
+    .sort((a, b) => groupRank(a.area) - groupRank(b.area));
 
   return (
     <QuickSearch
@@ -178,7 +192,7 @@ export function SiteSearch({
                 ))}
               </ListBoxSection>
             )),
-            <ListBoxSection key="pages" id="pages" title="Pages">
+            <ListBoxSection key="pages" id="pages" title={SITE_AREA}>
               {SITE_PAGES.map((page) => (
                 <Option key={toKey('page', page.href)} id={toKey('page', page.href)}>
                   {page.label}
