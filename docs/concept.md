@@ -139,11 +139,11 @@ Figma: "Design · Docs pages" (see docs/handoff.md).
 |---|---|---|
 | Skip link | "Skip to content", first focusable element | SkipLink |
 | Header (sticky) | Logo (links to Home) · Showcase, Docs, Updates in the middle · search · Give feedback · resources menu | SiteHeader, QuickSearch trigger |
-| Area sidebar | Docs only: the five docs areas in one tree, a filter field, theme and language at the bottom; status badge on pages not Stable | SideNav, NavSection, Badge |
+| Area sidebar | Docs only: the five docs areas in one tree, a filter field, theme and language at the bottom; status badge on pages not Stable | NavList (sidebar variant), NavGroup, Badge |
 | Page header | Component pages: a hero box with category line (plain text, no links – sidebar groups are not pages), title, excerpt, status, last update and Storybook link; the tab list below it. Foundation pages: the same hero with their own tabs, without status. Pattern and guide pages: the hero without tabs and status; foundation pages link to Figma. No breadcrumbs. | Site/Page header (docs only), Badge, Link, Tab list |
 | Content | Fixed sections of the page type, max width `container/prose` for text, examples up to `container/lg` | Container, Stack |
-| On this page | The page's sections, current one marked | NavList (rail) |
-| Footer | Name, version, license · Updates, GitHub, Storybook, Imprint, Privacy; docs pages add previous and next | Link, Pagination-style pair |
+| On this page | The page's sections, current one marked; a rail from 1280 px, a disclosure under the hero below | OnThisPage |
+| Footer | Name, version, license · Updates, GitHub, Storybook, Imprint, Privacy; docs pages add previous and next once they are designed in Figma | Link, Pagination-style pair |
 
 ### Header
 
@@ -193,7 +193,7 @@ Each page type has fixed sections in a fixed order; the content schema rejects a
 |---|---|---|
 | Component | Four tabs, each ending with Feedback (GitHub issue). Guidelines: playground with controls · overview (what, when, when not, the variants at a glance) · formatting (anatomy image, sizes and when to use them, alignment and spacing) · content (typography and wording, do and don't) · variants in detail · related · Styling, after Carbon's specifications: color (element, property, token) · typography (font size, weight, token) · structure (spacing image with redlines, element, property, px/rem, token) · sizes · Code: a card "React" that opens the component in Storybook – props live there only · Accessibility: what med.o provides · keyboard · design recommendations · development recommendations · testing status (axe and each screen reader, "Report a result") with the screen reader steps | Status, last update, keyboard table, screen reader steps and results, Storybook link |
 | Pattern | Overview (when, when not, decision table) · Anatomy · Building it (one block per part) · Behavior (validation, loading, errors, empty, mobile, with timings) · Content · Accessibility · Rules (do and don't) · Related · References | Linked components and their status |
-| Foundation | Four tabs after Carbon, each ending with Feedback. Overview: the model (for Colors: layers, layering model in Light and Dark, terms, interaction states, accessibility) · Guidelines: how to combine, Light and Dark, do and don't, related · Tokens: every group as a table (Light, Dark, token, Light → Dark, usage) · Code: CSS variables, Tailwind classes, JavaScript | All token values and contrast pairs |
+| Foundation | Four tabs after Carbon, each ending with Feedback. Overview: the model (for Colors: layers, layering model in Light and Dark, terms, interaction states, accessibility) · Guidelines: free sections for the combinations (for Colors: surfaces, text on backgrounds, brand surfaces), then Light and Dark, do and don't, related · Tokens: every group as a table (Light, Dark, token, Light → Dark, usage) · Code: CSS, Tailwind, JavaScript | All token values and contrast pairs |
 | Guide | Goal · Steps · Examples · Pitfalls · Related | Versions, commands |
 
 Site pages (Home, Showcase, Updates) have their own fixed layouts from Figma. Updates reads the changelogs of both packages, so nothing is written twice.
@@ -216,7 +216,7 @@ The site behaves like a product built with the system: every behavior below uses
 |---|---|---|
 | Search | Cmd/Ctrl + K opens a modal; results grouped by area (component, pattern, token, guide); token names and props are indexed; works offline after first load | Quick search pattern, Pagefind index |
 | Theme | Follows the system; a switch in the header stores Light or Dark; examples follow the page theme | `data-theme`, Theming guide |
-| Navigation | Header with Showcase, Docs and Updates; one sidebar in the docs; "On this page" rail from 1024 px; bottom of each page: previous and next | Side navigation |
+| Navigation | Header with Showcase, Docs and Updates; one sidebar in the docs; "On this page" rail from 1280 px; bottom of each page: previous and next, designed in Figma first | Side navigation |
 | Mobile | Below 640 px the sidebar becomes a drawer; tables stack; examples scroll inside their frame | Drawer, StackTable rules from Storybook |
 | Examples | Live, keyboard usable, "Show code" and "Copy"; "Open in Storybook" for every prop | Client components, Shiki |
 | Copy | Copy buttons on code, token names and hex values, with a toast | Toast |
@@ -232,13 +232,13 @@ The same bar as the components: checks run on every pull request and a failing o
 |---|---|---|
 | Accessibility | WCAG 2.2 AA, axe on every page in Light and Dark; keyboard path through header, search and one example per page | Playwright + axe |
 | Screen reader | Manual run of the site's own flows (search, navigation, theme switch) before launch, like a component | NVDA, VoiceOver, TalkBack |
-| Performance | Lighthouse 95+ on mobile; no page over 270 kB of JavaScript (gzip); LCP under 2.5 s | Lighthouse CI, budget script |
+| Performance | Lighthouse on mobile, one page per template: accessibility, best practices and SEO score 100 (blocking); performance 95+ and LCP under 2.5 s warn until the library `Image` shows images before hydration; no page over 270 kB of JavaScript (gzip) | Lighthouse CI, budget script |
 | Content | Required sections present; front matter valid; no broken internal links; code samples type-check | Content schema, link checker, `tsc` |
-| Visual | Screenshots of each page template in Light, Dark and at 390 px | Playwright |
+| Visual | Screenshots of each template page: Light and Dark at 1440 px, Light at 390 px | Playwright |
 | SEO | Title and description per page, canonical URLs, sitemap, Open Graph image per page | Next.js sitemap, build check |
 | Spelling | US English, the design system's word list | cspell |
 
-Targets for Lighthouse are proposals to confirm after the first build. The JavaScript budget comes from the phase 0 build: every page loads about 262 kB gzip. React Aria takes 98 kB, React 75 kB, Next.js 65 kB, @med-o/ui 15 kB and the site's own code 4 kB. The first proposal of 100 kB is out of reach, because React and Next.js alone take 140 kB. The budget of 270 kB stops regressions. The next lever is React Aria: it ships date code the site does not use.
+The JavaScript budget is 270 kB gzip per page and stops regressions. After phase 1 the largest page loads 268.6 kB (the Button tabs). The first proposal of 100 kB is out of reach, because React and Next.js alone take 140 kB. The next lever is in the design system: library modules that import components they render only in some cases.
 
 ## Hosting and operations
 
