@@ -2,6 +2,7 @@
  * Playwright: browser tests against the static export in out/, served like production by scripts/serve-out.mjs.
  * Run `npm run build` first. Chromium only for now. Every *.spec.mts in tests/ runs here: ES modules, so the specs can
  * import the helpers in scripts/ (the package itself is CommonJS).
+ * Screenshot references live in tests/screenshots/, one file per platform (see tests/screenshots.spec.mts).
  */
 import { defineConfig, devices } from '@playwright/test';
 
@@ -12,6 +13,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0,
+  snapshotPathTemplate: '{testDir}/screenshots/{arg}-{platform}{ext}',
   // CI: annotations on the pull request plus the HTML report as an artifact; locally: one line per test.
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list'], ['html', { open: 'never' }]],
   use: {

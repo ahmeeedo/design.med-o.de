@@ -21,7 +21,8 @@
  *   Steps in a row with arrows: <ColorFlow> around the blocks (Cards).
  *
  *   An image exported from Figma: <Image src="/spec/<page>/<name>.svg" alt="…" width={824} height={268}
- *   ratio="original" fit="contain" radius="lg" />, with a caption: wrap it in <Figure caption="…">.
+ *   ratio="original" fit="contain" radius="lg" />, with a caption: wrap it in <Figure caption="…">. An image in the
+ *   first screen of a page, which is then its largest element, gets `priority`: it loads at once instead of lazily.
  */
 import type { MDXComponents } from 'mdx/types';
 import { Badge, Figure, Image, List, ListItem, Stack } from '@med-o/ui';
