@@ -1,0 +1,4 @@
+/* The Storybook card is as wide as in Figma 107:1984 (400 px, size/width/2xl); it never stretches over the column. */
+.card {
+  max-inline-size: var(--medo-size-width-2xl);
+}
