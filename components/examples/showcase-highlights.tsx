@@ -1,6 +1,7 @@
 /**
- * Showcase highlights (Figma 67:1058): the library Carousel (row) of six filled cards. Each names the components it
- * is built from and holds the live example it describes – the same examples as on Home.
+ * Showcase highlights (Figma 67:1058): the library Carousel (row) of six filled cards, running to the right edge of
+ * the screen. Each names the components it is built from and holds the live example it describes – the same
+ * examples as on Home.
  */
 'use client';
 
@@ -21,7 +22,7 @@ const HIGHLIGHTS: { title: string; components: string; body: ReactNode }[] = [
 
 export function ShowcaseHighlights() {
   return (
-    <Carousel title="Highlights" layout="row" itemSize="lg">
+    <Carousel title="Highlights" layout="row" itemSize="lg" bleed>
       {HIGHLIGHTS.map((highlight) => (
         <Card key={highlight.title} title={highlight.title} subtitle={highlight.components} variant="filled" headingLevel={3}>
           {highlight.body}

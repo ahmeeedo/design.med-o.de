@@ -34,6 +34,8 @@ const skipLink = (page: Page) => page.getByRole('link', { name: 'Skip to content
 /** A control in the site header (the footer repeats some page links). */
 const inHeader = (page: Page, role: 'link' | 'button', name: string) =>
   page.getByRole('banner').getByRole(role, { name, exact: true });
+/** The theme select: React Aria names its button with the value first (“System Theme”). */
+const themeSelect = (page: Page) => page.getByRole('banner').getByRole('button', { name: /Theme$/ });
 const searchDialog = (page: Page) => page.getByRole('dialog', { name: 'Search the docs' });
 /** The desktop trigger is the field-like button “Search …”; on phones it is the icon button “Search”. */
 const searchTrigger = (page: Page, width: 'desktop' | 'phone') => inHeader(page, 'button', width === 'desktop' ? 'Search …' : 'Search');
@@ -71,8 +73,19 @@ test.describe('desktop', () => {
       inHeader(page, 'link', 'Updates'),
       searchTrigger(page, 'desktop'),
       inHeader(page, 'link', 'Give feedback (opens in a new tab)'),
+      themeSelect(page),
       inHeader(page, 'button', 'Resources'),
     ]);
+  });
+
+  test('the theme select in the header switches the theme on every page', async ({ page }) => {
+    await open(page, '/updates');
+    const theme = themeSelect(page);
+    await theme.focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('option', { name: 'Dark' }).click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(theme).toHaveText(/Dark/);
   });
 
   test('Give feedback opens a new tab safely', async ({ page }) => {

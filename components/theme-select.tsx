@@ -1,6 +1,7 @@
 /**
- * Theme select (System, Light, Dark) at the bottom of the docs sidebar and in the mobile menu, with the label beside
- * the field as in Figma Site/Sidebar. Every instance shows the same choice; see theme.ts for how it is stored.
+ * Theme select (System, Light, Dark). In the header on every page it stands alone with the icon as its visible
+ * cue and "Theme" as its name; in the mobile menu it shows the label beside the field. Every instance shows the same
+ * choice; see theme.ts for how it is stored.
  */
 'use client';
 
@@ -15,17 +16,17 @@ const OPTIONS: { id: Theme; label: string; icon: React.ReactNode }[] = [
   { id: 'dark', label: 'Dark', icon: <Moon /> },
 ];
 
-export function ThemeSelect() {
+export function ThemeSelect({ size = 'md', label = 'hidden', className }: { size?: 'md' | 'lg'; label?: 'hidden' | 'start'; className?: string }) {
   const theme = useTheme();
 
   return (
     <Select
-      label="Theme"
-      labelPosition="start"
-      size="sm"
+      {...(label === 'start' ? { label: 'Theme', labelPosition: 'start' as const } : { 'aria-label': 'Theme' })}
+      size={size}
       leadingIcon={<SunMoon />}
       value={theme}
       onChange={(key: Key | null) => key && setTheme(key as Theme)}
+      className={className}
     >
       {OPTIONS.map((o) => (
         <Option key={o.id} id={o.id} icon={o.icon}>

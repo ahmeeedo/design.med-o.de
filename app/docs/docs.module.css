@@ -1,7 +1,7 @@
 /*
  * Docs layout (Figma 11:1204, 11:1916, 106:3625, 121:2152).
  * Sidebar: from 1024 px a fixed column (280 px, size/width/lg) that scrolls on its own below the sticky header; from
- * 768 to 1023 px a Menu button above the page opens the same tree in a Drawer (panel, tree and settings are shared);
+ * 768 to 1023 px a Menu button above the page opens the same tree in a Drawer (panel and tree are shared);
  * below 768 px the tree is part of the mobile menu.
  * Page: the page margin on both sides, from 1024 px space/12 (48) as in Figma. Hero, tabs, text and examples share
  * one column of up to container/lg. From 1280 px "On this page" is a rail (240 px, size/width/md) right of the
@@ -18,7 +18,7 @@
   display: none;
 }
 
-/* Tree above, settings pinned at the bottom with a line above them: the sidebar and the drawer. */
+/* The tree, scrolling on its own: the sidebar and the drawer. */
 .panel {
   display: flex;
   flex-direction: column;
@@ -30,11 +30,6 @@
   flex: 1;
   min-block-size: 0;
   overflow-y: auto;
-}
-
-.settings {
-  padding-block-start: var(--medo-space-4);
-  border-block-start: var(--medo-border-width-thin) solid var(--medo-color-border-default);
 }
 
 .page {

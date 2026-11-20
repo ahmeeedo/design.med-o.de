@@ -1,7 +1,8 @@
 /*
  * Search trigger of the header (Figma 10:2250): the field-like trigger from 1280 px, 280 wide (size/width/lg), the
  * icon button below. The library switches to the compact header at 768 px itself; the 1280 px step is the one rule
- * it does not cover.
+ * it does not cover. The theme select hugs its value (a Select fills its row by default). Between 768 and 1023 px
+ * "Give feedback" is an icon button, so the actions fit next to the page links.
  */
 .field {
   inline-size: var(--medo-size-width-lg);
@@ -15,6 +16,27 @@
 
 @media (min-width: 1280px) {
   .icon {
+    display: none;
+  }
+}
+
+.theme {
+  flex: none;
+  inline-size: max-content;
+}
+
+.narrow {
+  flex: none;
+}
+
+@media (max-width: 1023.98px) {
+  .wide {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .narrow {
     display: none;
   }
 }

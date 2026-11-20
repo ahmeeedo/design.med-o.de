@@ -4,9 +4,9 @@
  */
 import styles from './page-main.module.css';
 
-export function PageMain({ children }: { children: React.ReactNode }) {
+export function PageMain({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <main id="main" tabIndex={-1} className={styles.main}>
+    <main id="main" tabIndex={-1} className={className ? `${styles.main} ${className}` : styles.main}>
       {children}
     </main>
   );

@@ -2,7 +2,9 @@
  * Theme compare (Figma 67:2257): a framed area (border/default, radius/xl) where both theme copies lie on top of
  * each other, each on its own surface/canvas. The scene is a grid instead of the design's free positions: the sign-up
  * card, the two small panels beside it and the alert below – the same parts, aligned to the spacing rules. The
- * badges sit 24 px from the corners. Below 640 px the Settings card replaces the scene (Figma 79:2562).
+ * badges sit 24 px from the corners. The handle on the divider (44 px, surface/raised, a 2 px action/primary ring and
+ * the grip icon) follows the split; the whole picture drags it. Below 640 px the Settings card replaces the scene
+ * (Figma 79:2562).
  */
 .compare {
   position: relative;
@@ -10,6 +12,42 @@
   overflow: hidden;
   border: var(--medo-border-width-thin) solid var(--medo-color-border-default);
   border-radius: var(--medo-radius-xl);
+  cursor: ew-resize;
+  /* Horizontal drags move the split; the page still scrolls vertically on touch. */
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.handle {
+  position: absolute;
+  inset-block-start: 50%;
+  display: grid;
+  place-items: center;
+  inline-size: calc(var(--medo-size-control-md) + var(--medo-space-1));
+  block-size: calc(var(--medo-size-control-md) + var(--medo-space-1));
+  border: var(--medo-border-width-thick) solid var(--medo-color-action-primary);
+  border-radius: var(--medo-radius-full);
+  background: var(--medo-color-surface-raised);
+  box-shadow: var(--medo-shadow-elevation-2);
+  color: var(--medo-color-text-primary);
+  translate: -50% -50%;
+  transition: scale var(--medo-motion-duration-fast) var(--medo-motion-easing-standard);
+}
+
+.handle svg {
+  inline-size: var(--medo-size-icon-md);
+  block-size: var(--medo-size-icon-md);
+}
+
+.compare[data-dragging] .handle,
+.compare:hover .handle {
+  scale: 1.08;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handle {
+    transition: none;
+  }
 }
 
 .layer {
