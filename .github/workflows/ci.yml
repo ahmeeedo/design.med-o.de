@@ -18,9 +18,9 @@
 #   sitemap  sitemap.xml lists every page of the export and nothing else, and robots.txt names it. Red = the log lists
 #            the missing and extra URLs (scripts/check-sitemap.mjs).
 #   screenshots every template page against its reference in tests/screenshots/ (Light and Dark at 1440, Light at
-#            390). Red = a page looks different, or has no reference yet: the diff is in the Playwright report, new
-#            references in the "screenshots" artifact. To accept a change: Actions → CI → Run workflow → your branch →
-#            "Update screenshots" (see tests/screenshots.spec.mts).
+#            390). Red = a page looks different, or has no reference yet: the diff is in the Playwright report. To
+#            accept a change or add a page: Actions → "Update screenshots" → Run workflow → your branch; it commits
+#            the references to the branch (see tests/screenshots.spec.mts).
 #   lighthouse Lighthouse on mobile for one page per type, with the scores and LCP in the summary and the reports in
 #            the "lighthouse" artifact. Red = accessibility, best practices or SEO below 100 on a page. Performance
 #            below 95 and LCP over 2.5 s only warn until images show before hydration (the library Image).
@@ -31,14 +31,8 @@ on:
   pull_request:
   push:
     branches: [main]
-  # By hand, on any branch: the same checks; with "Update screenshots" the screenshots job rewrites the references
-  # that differ and uploads them.
+  # By hand, on any branch: the same checks.
   workflow_dispatch:
-    inputs:
-      update-screenshots:
-        description: Update screenshots
-        type: boolean
-        default: false
 
 # A new push to the same branch cancels the run that is still going.
 concurrency:
@@ -245,25 +239,9 @@ jobs:
         with:
           name: site
           path: out
-      # "default" compares and writes missing references (their tests fail); "changed" also rewrites those that differ.
+      # Compares only: a page without a reference fails. References come from the workflow "Update screenshots".
       - name: Compare with the references
-        env:
-          UPDATE: ${{ inputs.update-screenshots && 'changed' || 'default' }}
-        run: npm run test:screenshots -- --update-snapshots="$UPDATE"
-      - name: Find new or updated references
-        id: references
-        if: always()
-        run: |
-          if [ -n "$(git status --porcelain -- tests/screenshots)" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "New or updated screenshots: download the \"screenshots\" artifact, unzip it into tests/screenshots/ and commit the files." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - uses: actions/upload-artifact@v7
-        if: always() && steps.references.outputs.changed == 'true'
-        with:
-          name: screenshots
-          path: tests/screenshots/*-linux.png
-          retention-days: 14
+        run: npm run test:screenshots -- --update-snapshots=none
       - uses: actions/upload-artifact@v7
         if: failure()
         with:

@@ -1,0 +1,56 @@
+# Update screenshots: makes the reference screenshots of the CI job "screenshots" and commits them to the branch.
+# Run it from the Actions tab ("Run workflow") on the branch of the pull request whose look is correct – after an
+# intended visual change (the job is red), or for a new page in tests/screenshots.spec.mts. Not on main: main only
+# changes through pull requests. References are only made here: fonts render slightly differently on every OS, so
+# screenshots from a laptop would never match CI.
+#
+# Pushes with the built-in token start no workflow, so CI does not run for the commit on its own: close and reopen
+# the pull request, or push again. With the secret RELEASE_TOKEN (fine-grained token: this repository, Contents
+# read and write) the commit starts CI right away.
+name: Update screenshots
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: update-screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write # commit the references to the branch
+
+jobs:
+  update:
+    # main is protected (pull requests only): run it on the branch of the pull request.
+    if: github.ref != 'refs/heads/main'
+    # Same image and browser as the job "screenshots" in ci.yml, or the references would not match there.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history: prebuild reads the last commit date of every page (scripts/page-dates.mjs).
+          fetch-depth: 0
+          # The references are pushed with these credentials.
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run build
+      # "changed" writes the missing references and rewrites those that differ; unchanged pages keep their file.
+      - name: Create references
+        run: npm run test:screenshots -- --update-snapshots=changed
+      - name: Commit references
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/screenshots
+          if git diff --cached --quiet; then
+            echo "Screenshots unchanged."
+          else
+            git commit -m "test: update reference screenshots"
+            git push
+          fi

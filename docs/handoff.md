@@ -82,7 +82,7 @@ Every job of `.github/workflows/ci.yml` runs on every pull request. The nine req
 | `screenshots` | `npm run test:screenshots` | Every template page against its reference in `tests/screenshots/` |
 | `lighthouse` | `npm run check:lighthouse` | Mobile Lighthouse on one page per template (`lighthouserc.json`) |
 
-- **A changed screenshot:** run the CI workflow by hand on your branch with "Update screenshots", unzip the `screenshots` artifact into `tests/screenshots/`, check the images and commit them. References come from the Linux runner only. The steps are in the header of `tests/screenshots.spec.mts`.
+- **A changed screenshot:** run the workflow "Update screenshots" on your branch (Actions → Run workflow); it commits the new references to the branch. Check the images in the commit, then close and reopen the pull request so CI runs for it. References come from the Linux runner only. Version numbers and the "Updated" date are masked, so a release alone changes no reference.
 - **Hydration** (`tests/hydration.spec.mts`): a page fails when React logs a mismatch (#418, #423, #425), because the page then jumps and looks different without JavaScript.
 - **axe exemption:** `tests/a11y.spec.mts` skips the contrast rule only on `[data-contrast-example]`, the don't samples that show a failing color pair on purpose. Every other rule still runs on them.
 - **Lighthouse thresholds:** accessibility, best practices and SEO must score 100 and block the merge. Performance 95+ and LCP under 2.5 s only warn until the library `Image` shows a loaded image before hydration.

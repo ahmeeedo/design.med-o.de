@@ -6,17 +6,15 @@
  * differently per system. The file names carry the platform (…-linux.png); other platforms' files are git-ignored,
  * so a local run makes its own references and never touches the committed ones.
  *
- * Add a page: one line in PAGES. Make or update references (a new page, or a change you want to keep):
- *   1. Push the branch. A missing reference fails its test and is written on the runner; a changed page fails too.
- *   2. For changed pages: GitHub → Actions → CI → Run workflow → your branch → tick "Update screenshots" → Run.
- *      (Missing references need no extra run: step 1 already wrote them.)
- *   3. Open the run → Summary → Artifacts → "screenshots", unzip it into tests/screenshots/, check the images and
- *      commit them. The next run compares against them.
- * New templates get their references the same way when they land.
+ * Add a page: one line in PAGES. Make or update references (a new page, or a change you want to keep): push the
+ * branch, then GitHub → Actions → "Update screenshots" → Run workflow → your branch. The workflow writes the missing
+ * and the changed references and commits them to the branch (.github/workflows/update-screenshots.yml); check the
+ * images in the commit. The next CI run compares against them.
  *
  * Stable shots: reduced motion and no animations; the page has hydrated, the fonts are loaded and no Skeleton is
- * left (images and lazily loaded examples are done). The "Updated" date is masked: it follows the last commit of the
- * page, not its look. Docs pages are shot whole up to MAX_HEIGHT, so long pages (the token tables) stay comparable;
+ * left (images and lazily loaded examples are done). Masked: the "Updated" date (it follows the last commit of the
+ * page) and the version numbers in the footer and the Home link (they follow the release), not the look.
+ * Docs pages are shot whole up to MAX_HEIGHT, so long pages (the token tables) stay comparable;
  * site pages and the Changelog show their first screen, the part a visitor sees on arrival.
  * Phone width runs in Light only: Dark is covered at desktop width, and every reference stays in the git history
  * (about 8 MB for the set today), so a fourth set would add a third more for little extra coverage.
@@ -89,7 +87,7 @@ for (const shot of SHOTS) {
         await expect(page).toHaveScreenshot(`${slug(path)}-${shot.name}.png`, {
           fullPage: full,
           clip: full ? { x: 0, y: 0, width: shot.viewport.width, height: Math.min(height, MAX_HEIGHT) } : undefined,
-          mask: [page.getByText(/^Updated\s/)],
+          mask: [page.getByText(/^Updated\s/), page.locator('footer [translate="no"]'), page.getByText(/^What's new in version/)],
           animations: 'disabled',
           timeout: 15_000,
         });
