@@ -1,7 +1,8 @@
 /**
  * Showcase (Figma 67:979, mobile 79:1526): real interfaces built only from med.o components – a carousel of
- * highlights that name the components they use, six reasons to use the system, and one example in Light and Dark
- * side by side. Sections follow the spacing rule `section`; the page starts one section below the header.
+ * highlights that name the components they use (it runs off the right edge of the screen), six reasons to use the
+ * system, and one example in Light and Dark side by side with a split to drag. Sections follow the spacing rule
+ * `section`; the page starts one section below the header.
  */
 import type { Metadata } from 'next';
 import { Container, Grid, ListRowIcon, Stack } from '@med-o/ui';
@@ -49,8 +50,8 @@ const REASONS = [
 export default function Showcase() {
   return (
     <PageMain>
-      <Container className={styles.page}>
-        <Stack gap="section">
+      <Stack gap="section" className={styles.page}>
+        <Container align="start">
           <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
             <h1 className="medo-text-display-lg">Showcase</h1>
             <p className="medo-text-body-lg medo-text-secondary">
@@ -58,39 +59,46 @@ export default function Showcase() {
               takes your brand.
             </p>
           </Stack>
+        </Container>
+        {/* Full width: the carousel runs to the right edge of the screen (bleed), the header keeps the page width. */}
+        <Container size="full">
           <ShowcaseHighlights />
-          <Stack as="section" gap="group" aria-labelledby="why">
-            <Stack gap="inline">
-              <h2 id="why" className="medo-text-heading-xl">
-                Why med.o
-              </h2>
-              <p className="medo-text-body-lg medo-text-secondary">
-                Built for teams that ship accessible products – from the first design to production code.
-              </p>
+        </Container>
+        <Container align="start">
+          <Stack gap="section">
+            <Stack as="section" gap="group" aria-labelledby="why">
+              <Stack gap="inline">
+                <h2 id="why" className="medo-text-heading-xl">
+                  Why med.o
+                </h2>
+                <p className="medo-text-body-lg medo-text-secondary">
+                  Built for teams that ship accessible products – from the first design to production code.
+                </p>
+              </Stack>
+              <Grid as="ul" minItemSize="var(--medo-size-width-xl)" gap="items" className={styles.reasons}>
+                {REASONS.map((reason) => (
+                  <Stack as="li" key={reason.title} gap="content" align="start">
+                    <ListRowIcon>{reason.icon}</ListRowIcon>
+                    <h3 className="medo-text-heading-sm">{reason.title}</h3>
+                    <p className="medo-text-body-sm medo-text-secondary">{reason.text}</p>
+                  </Stack>
+                ))}
+              </Grid>
             </Stack>
-            <Grid as="ul" minItemSize="var(--medo-size-width-xl)" gap="items" className={styles.reasons}>
-              {REASONS.map((reason) => (
-                <Stack as="li" key={reason.title} gap="content" align="start">
-                  <ListRowIcon>{reason.icon}</ListRowIcon>
-                  <h3 className="medo-text-heading-sm">{reason.title}</h3>
-                  <p className="medo-text-body-sm medo-text-secondary">{reason.text}</p>
-                </Stack>
-              ))}
-            </Grid>
-          </Stack>
-          <Stack as="section" gap="group" aria-labelledby="themes">
-            <Stack gap="inline">
-              <h2 id="themes" className="medo-text-heading-xl">
-                Light and Dark, built in
-              </h2>
-              <p className="medo-text-body-lg medo-text-secondary">
-                Every token has a value for both themes. Move the slider to compare – the markup stays the same.
-              </p>
+            <Stack as="section" gap="group" aria-labelledby="themes">
+              <Stack gap="inline">
+                <h2 id="themes" className="medo-text-heading-xl">
+                  Light and Dark, built in
+                </h2>
+                <p className="medo-text-body-lg medo-text-secondary">
+                  Every token has a value for both themes. Move the slider to compare – the markup stays the same.
+                </p>
+              </Stack>
+              <ShowcaseThemeCompare />
             </Stack>
-            <ShowcaseThemeCompare />
           </Stack>
-        </Stack>
-      </Container>
+        </Container>
+      </Stack>
     </PageMain>
   );
 }

@@ -108,7 +108,7 @@ export default async function Updates() {
 
   return (
     <PageMain>
-      <Container className={styles.page}>
+      <Container align="start" className={styles.page}>
         <Stack gap="group" data-pagefind-body data-pagefind-meta="area:Pages">
           <Stack gap="content">
             <h1 className="medo-text-display-lg">Updates</h1>

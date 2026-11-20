@@ -1,7 +1,8 @@
 /**
  * Home (Figma "Explorations · Home hero": 37:2288, 55:4578, 55:5594, mobile 78:2827): one screen high – the intro on
  * the left (what's new, headline, the install command, Get started and Browse components) and the live examples on
- * the right, three sets switched with tabs. Below 1024 px the intro comes first and the examples follow as a row.
+ * the right, three sets switched with tabs; the examples run off the right and bottom edge of the screen. Below
+ * 1024 px the intro comes first and the examples follow as a row.
  * The install command is highlighted here at build time; no highlighting code reaches the browser.
  */
 import type { Metadata } from 'next';
@@ -33,7 +34,7 @@ export default async function Home() {
   );
 
   return (
-    <PageMain>
+    <PageMain className={styles.main}>
       <div className={styles.hero}>
         <Stack gap="items" className={styles.intro} data-pagefind-body data-pagefind-meta="area:Pages">
           <Link href="/updates" variant="standalone" size="sm" arrow>

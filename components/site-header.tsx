@@ -1,6 +1,7 @@
 /**
  * Site header (Figma Site/Header 10:2250): logo, the page links Showcase · Docs · Updates in the middle, and the
- * actions search, Give feedback and resources. Below 768 px the library shows logo, search and the menu button; the
+ * actions search, Give feedback, the theme select and resources. The theme select lives here, so every page has it,
+ * not only the docs pages with a sidebar. Below 768 px the library shows logo, search and the menu button; the
  * menu is its fullscreen sheet (Figma 11:2210 on docs pages, 79:4133 elsewhere) with the page links, a Contents |
  * Resources switch with the docs tree on docs pages, and the theme select and Give feedback pinned at the bottom.
  * The search dialog is rendered once here; every trigger opens the same one.
@@ -38,7 +39,9 @@ export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
           <>
             <QuickSearchTrigger className={styles.field} onPress={openSearch} />
             {searchIcon(styles.icon)}
-            <FeedbackLink />
+            <FeedbackLink className={styles.wide} />
+            <FeedbackLink compact className={styles.narrow} />
+            <ThemeSelect className={styles.theme} />
             <ResourcesMenu />
           </>
         }
@@ -47,7 +50,7 @@ export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
         menuContent={isWithin(pathname, '/docs') ? <DocsMenu docsTree={docsTree} /> : <ResourcesNav variant="sheet" />}
         menuActions={
           <>
-            <ThemeSelect />
+            <ThemeSelect size="lg" label="start" />
             <FeedbackLink size="lg" />
           </>
         }
