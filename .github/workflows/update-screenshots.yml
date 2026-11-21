@@ -4,9 +4,9 @@
 # changes through pull requests. References are only made here: fonts render slightly differently on every OS, so
 # screenshots from a laptop would never match CI.
 #
-# Pushes with the built-in token start no workflow, so CI does not run for the commit on its own: close and reopen
-# the pull request, or push again. With the secret RELEASE_TOKEN (fine-grained token: this repository, Contents
-# read and write) the commit starts CI right away.
+# Pushes with the built-in token start no workflow on their own: the pull request then shows a CI run waiting for
+# approval – approve it there, or close and reopen the pull request. With the secret RELEASE_TOKEN (fine-grained
+# token: this repository, Contents read and write) the commit starts CI right away.
 name: Update screenshots
 
 on:

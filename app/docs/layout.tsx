@@ -20,14 +20,17 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
           <DocsNav areas={tree} />
         </div>
       </aside>
-      <PageMain>
-        <Stack gap="group" className={styles.page}>
-          <div className={styles.drawer}>
-            <DocsDrawer areas={tree} />
-          </div>
-          {children}
-        </Stack>
-      </PageMain>
+      {/* The page and, below it, the footer: one column, so the sidebar stays in place to the end of the page. */}
+      <div className={styles.main}>
+        <PageMain>
+          <Stack gap="group" className={styles.page}>
+            <div className={styles.drawer}>
+              <DocsDrawer areas={tree} />
+            </div>
+            {children}
+          </Stack>
+        </PageMain>
+      </div>
     </div>
   );
 }

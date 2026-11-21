@@ -1,20 +1,21 @@
 /*
- * Example wall (Figma 37:2319): columns of 320 px (size/width/xl) one `items` gap apart, the cards inside one `items`
- * gap apart; the first column starts 32 px lower and the third 24 px lower than the second, as in the design. Below
- * 1024 px the Carousel row replaces it.
+ * Example wall (Figma 37:2319): three columns of at least 320 px (size/width/xl) one `items` gap apart, the cards
+ * inside one `items` gap apart; the first column starts 32 px lower and the third 24 px lower than the second, as in
+ * the design. The columns grow with the screen, so the wall always reaches its right edge: at 1440 px the third
+ * column is cut by the screen, on wider screens all three widen. Below 1024 px the Carousel row replaces it.
  */
 .wall {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--medo-size-width-xl), 1fr));
+  align-items: start;
   gap: var(--medo-layout-gap-items);
 }
 
 .column {
   display: flex;
-  flex: none;
   flex-direction: column;
   gap: var(--medo-layout-gap-items);
-  inline-size: var(--medo-size-width-xl);
+  min-inline-size: 0;
 }
 
 .column:nth-child(1) {

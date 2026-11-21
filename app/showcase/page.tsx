@@ -51,7 +51,7 @@ export default function Showcase() {
   return (
     <PageMain>
       <Stack gap="section" className={styles.page}>
-        <Container align="start">
+        <Container>
           <Stack gap="content" data-pagefind-body data-pagefind-meta="area:Pages">
             <h1 className="medo-text-display-lg">Showcase</h1>
             <p className="medo-text-body-lg medo-text-secondary">
@@ -60,11 +60,12 @@ export default function Showcase() {
             </p>
           </Stack>
         </Container>
-        {/* Full width: the carousel runs to the right edge of the screen (bleed), the header keeps the page width. */}
-        <Container size="full">
+        {/* Full width, padded like the centered container on the left: the carousel starts at the container's edge and
+            runs to the right edge of the screen (bleed); its header keeps the container width. */}
+        <Container size="full" className={styles.bleed}>
           <ShowcaseHighlights />
         </Container>
-        <Container align="start">
+        <Container>
           <Stack gap="section">
             <Stack as="section" gap="group" aria-labelledby="why">
               <Stack gap="inline">

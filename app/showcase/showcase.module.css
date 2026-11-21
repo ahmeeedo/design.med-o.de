@@ -11,3 +11,12 @@
   padding: 0;
   list-style: none;
 }
+
+/*
+ * The highlights row: a full-width area whose start padding equals the left edge of the centered container (the page
+ * margin, or half of what is left beside container/xl), so the row lines up with the sections above and below and
+ * the carousel's bleed takes the end margin back to the edge of the screen.
+ */
+.bleed {
+  padding-inline-start: max(var(--medo-layout-margin), calc((100% - var(--medo-container-xl)) / 2));
+}
