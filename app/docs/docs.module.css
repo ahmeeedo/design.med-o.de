@@ -18,6 +18,13 @@
   display: none;
 }
 
+/* The page column: <main> grows, the footer sits at its end. */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
 /* The tree, scrolling on its own: the sidebar and the drawer. */
 .panel {
   display: flex;

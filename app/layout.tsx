@@ -1,6 +1,6 @@
 /**
  * Root layout: fonts, tokens and component styles once for every page, the page language, the theme script and the
- * site frame (skip link, header, footer). DM Mono is only used for code, and the code text styles use the regular
+ * site frame (skip link, header; the footer follows <main> on every page, see PageMain). DM Mono is only used for code, and the code text styles use the regular
  * weight, so it loads in 400 only.
  */
 import type { Metadata } from 'next';
@@ -15,7 +15,6 @@ import '@med-o/design-tokens/css/base.css';
 import '@med-o/ui/styles.css';
 import { SkipLink } from '@med-o/ui';
 import { getDocsTree } from '../components/docs-content';
-import { SiteFooter } from '../components/site-footer';
 import { SiteHeader } from '../components/site-header';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, shareMetadata } from '../components/site-metadata';
 import { ThemeScript } from '../components/theme-script';
@@ -45,7 +44,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <SkipLink href="#main" />
             <SiteHeader docsTree={docsTree} />
             <div className={styles.content}>{children}</div>
-            <SiteFooter />
           </div>
         </Providers>
       </body>

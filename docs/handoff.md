@@ -61,8 +61,11 @@ State on 2026-11-15. The concept (`docs/concept.md`) says what the site is and w
 - **Logos only where the brand's terms allow it** (`public/brands/README.md`); every other brand shows its name as text.
 - **React Aria texts in en-US only** (`next.config.ts`): this saves 5 to 14 kB per page. A second site language needs its locale added there.
 - **The theme select is in the header** (`components/theme-select.tsx`), on every page; between 768 and 1023 px "Give feedback" is an icon button so the actions fit. A language select, when it comes, goes next to it.
-- **Pages without a sidebar start at the page margin** (`Container align="start"`), like the docs pages, instead of centering their column.
-- **Home and Showcase run off the screen:** the Home examples are cut by the right and bottom edge of the viewport (no bottom padding on `<main>` there), the Showcase carousel by the right edge (`Carousel bleed` in a full-width container). A mouse drags the carousel row and the Light and Dark split.
+- **Pages without a sidebar center their column** (`Container`), as before; only the Showcase highlights leave it: a full-width area whose start padding equals the left edge of the centered container (`showcase.module.css`, `.bleed`), so the row starts in line with the sections and `Carousel bleed` takes it to the right edge of the screen. A mouse drags the carousel row and the Light and Dark split.
+- **Home runs off the screen:** the example wall has three columns of at least 320 px that grow with the screen (`example-wall.module.css`), cut by the right and bottom edge of the viewport (no bottom padding on `<main>` there); the intro and the wall are one `section` gap apart. E-Commerce and Lifestyle are fetched in the browser's idle time, so the first tab switch shows them at once.
+- **Backdrop:** Home lays `gradient/aurora` over the page (`home.module.css`), and the header is `translucent` on every page so the backdrop continues under it. No other page has a backdrop; a Foundations page for the gradient on the site would come with the token's docs.
+- **The footer is one line with the legal links** (`components/site-footer.tsx`); Updates, GitHub and Storybook are in the header. It renders after `<main>` through `PageMain`, so on docs pages it sits in the page column and the sidebar stays in place to the end (`app/docs/layout.tsx`).
+- **Lifestyle examples show real songs and albums** (`components/examples/home-lifestyle.tsx`): titles, artists and lengths as released. The covers are `public/examples/covers/<artist>-<album>.jpg`, 600 × 600 px JPEGs re-encoded at quality 80 (about 25 to 150 kB).
 
 ### Checks
 
@@ -82,7 +85,7 @@ Every job of `.github/workflows/ci.yml` runs on every pull request. The nine req
 | `screenshots` | `npm run test:screenshots` | Every template page against its reference in `tests/screenshots/` |
 | `lighthouse` | `npm run check:lighthouse` | Mobile Lighthouse on one page per template (`lighthouserc.json`) |
 
-- **A changed screenshot:** run the workflow "Update screenshots" on your branch (Actions → Run workflow); it commits the new references to the branch. Check the images in the commit, then close and reopen the pull request so CI runs for it. References come from the Linux runner only. Version numbers and the "Updated" date are masked, so a release alone changes no reference.
+- **A changed screenshot:** run the workflow "Update screenshots" on your branch (Actions → Run workflow); it commits the new references to the branch. Check the images in the commit, then approve the waiting CI run on the pull request (or close and reopen it). References come from the Linux runner only. The version number on Home and the "Updated" date are masked, so a release alone changes no reference.
 - **Hydration** (`tests/hydration.spec.mts`): a page fails when React logs a mismatch (#418, #423, #425), because the page then jumps and looks different without JavaScript.
 - **axe exemption:** `tests/a11y.spec.mts` skips the contrast rule only on `[data-contrast-example]`, the don't samples that show a failing color pair on purpose. Every other rule still runs on them.
 - **Lighthouse thresholds:** accessibility, best practices and SEO must score 100 and block the merge. Performance 95+ and LCP under 2.5 s only warn until the library `Image` shows a loaded image before hydration.

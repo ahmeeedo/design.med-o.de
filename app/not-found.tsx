@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Page not found' };
 export default function NotFound() {
   return (
     <PageMain>
-      <Container size="prose" align="start">
+      <Container size="prose">
         <Stack gap="content" align="start">
           <h1 className="medo-text-heading-xl">Page not found</h1>
           <p className="medo-text-body-lg medo-text-secondary">This page does not exist or has moved.</p>
