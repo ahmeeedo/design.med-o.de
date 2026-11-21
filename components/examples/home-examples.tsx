@@ -2,20 +2,37 @@
  * The live examples on Home: three sets (App, E-Commerce, Lifestyle) switched with the library Tabs, as the Figma
  * frames 37:2288, 55:4578 and 55:5594 show. The tab list sits under the intro, the selected set on the right; the
  * Tabs element itself takes no box (display: contents) so both join the hero's grid.
- * Only the App set loads with the page. E-Commerce and Lifestyle load when their tab is chosen (next/dynamic), so
- * their components do not count against the page's JavaScript; panels of other tabs are not kept in the DOM.
+ * Only the App set loads with the page. E-Commerce and Lifestyle are separate chunks (next/dynamic), so they do not
+ * count against the page's JavaScript; the page fetches them once it is idle, so the first switch shows them at once
+ * instead of an empty panel. Should a tab come first, a Skeleton of the wall's height holds the place. Panels of
+ * other tabs are not kept in the DOM.
  */
 'use client';
 
+import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Tab, TabList, TabPanel, Tabs } from '@med-o/ui';
+import { Skeleton, Tab, TabList, TabPanel, Tabs } from '@med-o/ui';
 import { HomeApp } from './home-app';
 import styles from './home-examples.module.css';
 
-const HomeCommerce = dynamic(() => import('./home-commerce').then((m) => m.HomeCommerce));
-const HomeLifestyle = dynamic(() => import('./home-lifestyle').then((m) => m.HomeLifestyle));
+const loadCommerce = () => import('./home-commerce');
+const loadLifestyle = () => import('./home-lifestyle');
+const loading = () => <Skeleton shape="rect" width="100%" height="var(--medo-size-width-xl)" />;
+const HomeCommerce = dynamic(() => loadCommerce().then((m) => m.HomeCommerce), { loading });
+const HomeLifestyle = dynamic(() => loadLifestyle().then((m) => m.HomeLifestyle), { loading });
 
 export function HomeExamples() {
+  // The other two sets, fetched in the browser's idle time (after about 1.5 s where there is no idle callback).
+  useEffect(() => {
+    const idle = window.requestIdleCallback ?? ((callback: () => void) => window.setTimeout(callback, 1500));
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout;
+    const id = idle(() => {
+      void loadCommerce();
+      void loadLifestyle();
+    });
+    return () => cancel(id);
+  }, []);
+
   return (
     <Tabs defaultSelectedKey="app" className={styles.tabs}>
       <div className={styles.switch} data-pagefind-ignore="all">

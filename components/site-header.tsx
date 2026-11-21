@@ -35,6 +35,7 @@ export function SiteHeader({ docsTree }: { docsTree: DocsArea[] }) {
       <MedoSiteHeader
         logo={<SiteLogo />}
         align="center"
+        translucent
         actions={
           <>
             <QuickSearchTrigger className={styles.field} onPress={openSearch} />

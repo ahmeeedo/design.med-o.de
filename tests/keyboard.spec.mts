@@ -31,7 +31,7 @@ async function expectTabOrder(page: Page, stops: Locator[]) {
 }
 
 const skipLink = (page: Page) => page.getByRole('link', { name: 'Skip to content' });
-/** A control in the site header (the footer repeats some page links). */
+/** A control in the site header (the footer has the legal links only). */
 const inHeader = (page: Page, role: 'link' | 'button', name: string) =>
   page.getByRole('banner').getByRole(role, { name, exact: true });
 /** The theme select: React Aria names its button with the value first (“System Theme”). */

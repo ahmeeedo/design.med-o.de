@@ -42,7 +42,7 @@ export async function LegalPage({ name }: { name: LegalName }) {
 
   return (
     <PageMain>
-      <Container size="prose" align="start">
+      <Container size="prose">
         <Stack gap="group">
           <Stack gap="content">
             <h1 className="medo-text-heading-xl">{page.title}</h1>

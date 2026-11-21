@@ -13,7 +13,7 @@
  *
  * Stable shots: reduced motion and no animations; the page has hydrated, the fonts are loaded and no Skeleton is
  * left (images and lazily loaded examples are done). Masked: the "Updated" date (it follows the last commit of the
- * page) and the version numbers in the footer and the Home link (they follow the release), not the look.
+ * page) and the version number in the Home link (it follows the release), not the look.
  * Docs pages are shot whole up to MAX_HEIGHT, so long pages (the token tables) stay comparable;
  * site pages and the Changelog show their first screen, the part a visitor sees on arrival.
  * Phone width runs in Light only: Dark is covered at desktop width, and every reference stays in the git history
@@ -87,7 +87,7 @@ for (const shot of SHOTS) {
         await expect(page).toHaveScreenshot(`${slug(path)}-${shot.name}.png`, {
           fullPage: full,
           clip: full ? { x: 0, y: 0, width: shot.viewport.width, height: Math.min(height, MAX_HEIGHT) } : undefined,
-          mask: [page.getByText(/^Updated\s/), page.locator('footer [translate="no"]'), page.getByText(/^What's new in version/)],
+          mask: [page.getByText(/^Updated\s/), page.getByText(/^What's new in version/)],
           animations: 'disabled',
           timeout: 15_000,
         });

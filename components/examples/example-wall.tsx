@@ -1,5 +1,5 @@
 /**
- * The live examples of one Home set (Figma "Example wall", 37:2319): from 1024 px three columns of 320 px cards,
+ * The live examples of one Home set (Figma "Example wall", 37:2319): from 1024 px three columns of cards, 320 px or wider,
  * staggered and cropped by the screen edge as in the design; below it the same cards as a row in the library
  * Carousel (78:2827). Both forms are in the HTML and CSS shows one, so the static page is right at every width;
  * the hidden form is display: none and stays out of the tab order and the accessibility tree.
